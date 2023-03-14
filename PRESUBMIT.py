@@ -800,16 +800,14 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     ),
     BanRule(
       (
-        r'/\b(?:'
-        r'std::linear_congruential_engine|std::mersenne_twister_engine|'
-        r'std::subtract_with_carry_engine|std::discard_block_engine|'
-        r'std::independent_bits_engine|std::shuffle_order_engine|'
-        r'std::minstd_rand0|std::minstd_rand|'
-        r'std::mt19937|std::mt19937_64|'
-        r'std::ranlux24_base|std::ranlux48_base|std::ranlux24|std::ranlux48|'
-        r'std::knuth_b|'
-        r'std::default_random_engine|'
-        r'std::random_device'
+        r'/\bstd::(?:'
+        r'linear_congruential_engine|mersenne_twister_engine|'
+        r'subtract_with_carry_engine|discard_block_engine|'
+        r'independent_bits_engine|shuffle_order_engine|'
+        r'minstd_rand0?|mt19937(_64)?|ranlux(24|48)(_base)?|knuth_b|'
+        r'default_random_engine|'
+        r'random_device|'
+        r'seed_seq'
         r')\b'
       ),
       (
@@ -1101,14 +1099,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           # Not an error in third_party folders.
           _THIRD_PARTY_EXCEPT_BLINK
       ],
-    ),
-    BanRule(
-      r'/#include <random>',
-      (
-        '<random> is banned. Use base::RandomBitGenerator instead.',
-      ),
-      True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
       r'/#include <X11/',

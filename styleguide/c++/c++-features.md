@@ -159,21 +159,21 @@ explicitly allowed.
 [Discussion thread](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/8i4tMqNpHhg)
 ***
 
-### &lt;random&gt; <sup>[banned]</sup>
+### Engines And Generators From &lt;random&gt; <sup>[banned]</sup>
 
 ```c++
-#include <random>
+std::mt19937 generator;
 ```
 
-**Description:** Random number generation algorithms and utilities.
+**Description:** Methods of generating random numbers.
 
 **Documentation:**
 [Pseudo-random number generation](https://en.cppreference.com/w/cpp/numeric/random)
 
 **Notes:**
 *** promo
-Do not use any random number engines from `<random>`. Instead, use
-`base::RandomBitGenerator`.
+Do not use any random number engines or generators from `<random>`. Instead, use
+`base::RandomBitGenerator`. (You may use the distributions from `<random>`.)
 
 [Discussion thread](https://groups.google.com/a/chromium.org/forum/#!topic/cxx/16Xmw05C-Y0)
 ***
