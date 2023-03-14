@@ -370,6 +370,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.lineBreakMode = NSLineBreakByClipping;
+  titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   titleLabel.textColor =
       GetInterfaceStyleDarkColor([UIColor colorNamed:kTextPrimaryColor]);
