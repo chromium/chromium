@@ -43,7 +43,8 @@ constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_tests
            [--codec=<codec>] [--num_temporal_layers=<number>]
            [--num_spatial_layers=<number>] [--bitrate_mode=(cbr|vbr)]
-           [--reverse] [--disable_validator] [--output_bitstream]
+           [--reverse] [--bitrate=<bitrate>]
+           [--disable_validator] [--output_bitstream]
            [--output_images=(all|corrupt)] [--output_format=(png|yuv)]
            [--output_folder=<filepath>] [--output_limit=<number>]
            [--disable_vaapi_lock]
@@ -76,6 +77,9 @@ The following arguments are supported:
                         bitstream. Only used in --codec=vp9 currently.
                         Spatial SVC encoding is applied only in
                         NV12Dmabuf test cases.
+  --bitrate             bitrate (bits in second) of a produced bitstram.
+                        If not specified, a proper value for the video
+                        resolution is selected by the test.
   --bitrate_mode        The rate control mode for encoding, one of "cbr"
                         (default) or "vbr".
   --reverse             the stream plays backwards if the stream reaches
@@ -866,6 +870,7 @@ int main(int argc, char** argv) {
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
   bool output_bitstream = false;
+  absl::optional<uint32_t> output_bitrate;
   bool reverse = false;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   media::test::FrameOutputConfig frame_output_config;
@@ -908,6 +913,14 @@ int main(int argc, char** argv) {
       enable_bitstream_validator = false;
     } else if (it->first == "output_bitstream") {
       output_bitstream = true;
+    } else if (it->first == "bitrate") {
+      unsigned value;
+      if (!base::StringToUint(it->second, &value)) {
+        std::cout << "invalid bitrate " << it->second << "\n"
+                  << media::test::usage_msg;
+        return EXIT_FAILURE;
+      }
+      output_bitrate = base::checked_cast<uint32_t>(value);
     } else if (it->first == "reverse") {
       reverse = true;
     } else if (it->first == "output_images") {
@@ -957,8 +970,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, num_temporal_layers, num_spatial_layers,
-          output_bitstream,
-          /*output_bitrate=*/absl::nullopt, bitrate_mode, reverse,
+          output_bitstream, output_bitrate, bitrate_mode, reverse,
           frame_output_config,
           /*enabled_features=*/{}, disabled_features);
 
