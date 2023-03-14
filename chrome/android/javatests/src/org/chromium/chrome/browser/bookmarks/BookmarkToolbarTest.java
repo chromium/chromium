@@ -428,6 +428,43 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testOnSelectionStateChange_selectedThenNot() {
+        initializeNormal();
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
+        verifySelectionMenuVisibility();
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
+        verifySelectionMenuVisibility(R.id.selection_mode_edit_menu_id,
+                R.id.selection_mode_move_menu_id, R.id.selection_mode_delete_menu_id,
+                R.id.selection_open_in_new_tab_id, R.id.selection_open_in_incognito_tab_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testOnSelectionStateChange_selectedThenNot_searching() {
+        initializeNormal();
+        mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.SEARCHING);
+        Assert.assertTrue(mBookmarkToolbar.isSearching());
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
+        verifySelectionMenuVisibility();
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
+        verifySelectionMenuVisibility(R.id.selection_mode_edit_menu_id,
+                R.id.selection_mode_move_menu_id, R.id.selection_mode_delete_menu_id,
+                R.id.selection_open_in_new_tab_id, R.id.selection_open_in_incognito_tab_id);
+        Assert.assertTrue(mBookmarkToolbar.isSearching());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testOnDragStateChange() {
         initializeNormal();
 

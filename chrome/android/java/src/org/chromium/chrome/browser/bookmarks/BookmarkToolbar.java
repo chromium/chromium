@@ -44,6 +44,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private BookmarkId mCurrentFolderId;
     private BookmarkItem mCurrentFolder;
     private @BookmarkUiMode int mBookmarkUiMode;
+    // Whether the selection ui is currently showing. This isn't captured by an explicit
+    // BookmarkUiMode.
+    private boolean mIsSelectionUiShowing;
 
     private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
@@ -85,6 +88,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setBookmarkUiMode(@BookmarkUiMode int mode) {
         mBookmarkUiMode = mode;
+        mIsSelectionUiShowing = false;
         if (mBookmarkUiMode == BookmarkUiMode.LOADING) {
             showLoadingUi();
         } else {
@@ -272,6 +276,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         if (mBookmarkModel == null) return;
 
         if (mIsSelectionEnabled) {
+            mIsSelectionUiShowing = true;
             // Editing a bookmark action on multiple selected items doesn't make sense. So disable.
             getMenu()
                     .findItem(R.id.selection_mode_edit_menu_id)
@@ -339,6 +344,10 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             getMenu()
                     .findItem(R.id.reading_list_mark_as_unread_id)
                     .setVisible(onlyReadingListSelected && numRead == selectedBookmarks.size());
+        } else if (mIsSelectionUiShowing) {
+            // When selection isn't enabled (e.g. we just de-selected the last item) but the
+            // selection UI is still showing we want to revert to the previous known mode.
+            setBookmarkUiMode(mBookmarkUiMode);
         }
     }
 }

@@ -533,6 +533,8 @@ public class BookmarkTest {
         Assert.assertEquals("Wrong number of items after closing search UI.", 3,
                 mItemsContainer.getAdapter().getItemCount());
         Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
+        Assert.assertEquals(
+                TEST_FOLDER_TITLE, mBookmarkManagerCoordinator.getToolbarForTesting().getTitle());
     }
 
     @Test
