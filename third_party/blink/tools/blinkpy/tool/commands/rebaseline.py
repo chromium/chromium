@@ -204,87 +204,59 @@ class ChangeSet(object):
             self.lines_to_remove[test].extend(other.lines_to_remove[test])
 
 
-class TestBaselineSet(object):
+class TestBaselineSet:
     """Represents a collection of tests and platforms that can be rebaselined.
 
     A TestBaselineSet specifies tests to rebaseline along with information
     about where to fetch the baselines from.
     """
 
-    def __init__(self, host, prefix_mode=True):
-        """Args:
-            host: A Host object.
-            prefix_mode: (Optional, default to True) Whether the collection
-                contains test prefixes or specific tests.
-        """
-        self._host = host
-        # Set self._port to None to avoid accidentally calling port.tests when
-        # we are not in prefix mode.
-        self._port = self._host.port_factory.get() if prefix_mode else None
+    def __init__(self, builders):
+        self._builders = builders
         self._build_steps = set()
-        self._prefix_mode = prefix_mode
-        self._test_prefix_map = collections.defaultdict(list)
+        self._test_map = collections.defaultdict(list)
 
     def __iter__(self):
         return iter(self._iter_combinations())
 
     def __bool__(self):
-        return bool(self._test_prefix_map)
+        return bool(self._test_map)
 
     def _iter_combinations(self):
         """Iterates through (test, build, step, port) combinations."""
-        for test_prefix, build_steps in self._test_prefix_map.items():
-            if not self._prefix_mode:
-                for build_step in build_steps:
-                    yield (test_prefix, ) + build_step
-                continue
-
-            for test in self._port.tests([test_prefix]):
-                for build_step in build_steps:
-                    yield (test, ) + build_step
+        for test, build_steps in self._test_map.items():
+            for build_step in build_steps:
+                yield (test, ) + build_step
 
     def __str__(self):
-        if not self._test_prefix_map:
+        if not self._test_map:
             return '<Empty TestBaselineSet>'
         return '<TestBaselineSet with:\n  %s>' % '\n  '.join(
             '%s: %s, %s, %s' % combo for combo in self._iter_combinations())
 
-    def test_prefixes(self):
-        """Returns a sorted list of test prefixes (or tests) added thus far."""
-        return sorted(self._test_prefix_map)
-
     def all_tests(self):
         """Returns a sorted list of all tests without duplicates."""
-        tests = set()
-        for test_prefix in self._test_prefix_map:
-            if self._prefix_mode:
-                tests.update(self._port.tests([test_prefix]))
-            else:
-                tests.add(test_prefix)
-        return sorted(tests)
+        return sorted(self._test_map)
 
-    def build_port_pairs(self, test_prefix):
+    def build_port_pairs(self, test):
         # Return a copy in case the caller modifies the returned list.
-        return [(build, port)
-                for build, _, port in self._test_prefix_map[test_prefix]]
+        return [(build, port) for build, _, port in self._test_map[test]]
 
-    def add(self, test_prefix, build, step_name=None, port_name=None):
+    def add(self, test, build, step_name=None, port_name=None):
         """Adds an entry for baselines to download for some set of tests.
 
         Args:
-            test_prefix: This can be a full test path; if the instance was
-                constructed in prefix mode (the default), this can also be a
-                directory of tests or a path with globs.
+            test: A full test path.
             build: A Build object. Along with the step name, this specifies
                 where to fetch baselines from.
             step_name: The name of the build step this test was run for.
             port_name: This specifies what platform the baseline is for.
         """
-        port_name = port_name or self._host.builders.port_name_for_builder_name(
+        port_name = port_name or self._builders.port_name_for_builder_name(
             build.builder_name)
         self._build_steps.add((build.builder_name, step_name))
         build_step = (build, step_name, port_name)
-        self._test_prefix_map[test_prefix].append(build_step)
+        self._test_map[test].append(build_step)
 
     def all_build_steps(self):
         """Returns all builder name, step name pairs in this collection."""
@@ -316,9 +288,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def _filter_baseline_set_builders(self, test_baseline_set):
         build_steps_to_fetch_from = self.build_steps_to_fetch_from(
             test_baseline_set.all_build_steps())
-        for test_prefix, build, step_name, port_name in test_baseline_set:
+        for test, build, step_name, port_name in test_baseline_set:
             if (build.builder_name, step_name) in build_steps_to_fetch_from:
-                yield (test_prefix, build, step_name, port_name)
+                yield (test, build, step_name, port_name)
 
     def build_steps_to_fetch_from(self, build_steps_to_check):
         """Returns the subset of builder-step pairs that will cover all of the
@@ -718,18 +690,17 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         else:
             builders_to_check = self._builders_to_pull_from()
 
-        test_baseline_set = TestBaselineSet(tool)
-
+        test_baseline_set = TestBaselineSet(tool.builders)
+        tests = self._tool.port_factory.get().tests(args)
         for builder in builders_to_check:
             build = Build(builder)
             step_names = self._tool.results_fetcher.get_layout_test_step_names(
                 build)
             for step_name in step_names:
-                for test_prefix in args:
-                    test_baseline_set.add(test_prefix, build, step_name)
+                for test in tests:
+                    test_baseline_set.add(test, build, step_name)
 
         _log.debug('Rebaselining: %s', test_baseline_set)
-
         self.rebaseline(options, test_baseline_set)
 
 

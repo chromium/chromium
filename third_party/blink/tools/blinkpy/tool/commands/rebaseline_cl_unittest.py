@@ -312,6 +312,18 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining two/image-fail.html\n',
         ])
 
+    def test_execute_with_explicit_dir(self):
+        exit_code = self.command.execute(self.command_options(), ['one/'],
+                                         self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining one/flaky-fail.html\n',
+            'INFO: Rebaselining one/missing.html\n',
+            'INFO: Rebaselining one/slow-fail.html\n',
+            'INFO: Rebaselining one/text-fail.html\n',
+        ])
+
     def test_execute_basic_dry_run(self):
         """Dry running does not execute any commands or write any files."""
         self.set_logging_level(logging.DEBUG)
@@ -353,7 +365,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
             one/does-not-exist.html
             one/text-fail.html
-                two/image-fail.html   '''))
+                two/   '''))
         exit_code = self.command.execute(
             self.command_options(test_name_file=test_name_file), [], self.tool)
         self.assertEqual(exit_code, 0)
@@ -383,18 +395,17 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         for build in self.builds:
             self.tool.results_fetcher.set_results(build,
                                                   self.web_test_resultdb)
-        with mock.patch('blinkpy.common.message_pool.get'):
-            exit_code = self.command.execute(
-                self.command_options(test_name_file=test_name_file,
-                                     resultDB=True), [], self.tool)
-            self.assertEqual(exit_code, 0)
-            self.assertLog([
-                'INFO: All builds finished.\n',
-                'INFO: Reading list of tests to rebaseline from %s\n' %
-                test_name_file,
-                'INFO: Rebaselining one/missing.html\n',
-                'INFO: Rebaselining two/image-fail.html\n',
-            ])
+        exit_code = self.command.execute(
+            self.command_options(test_name_file=test_name_file, resultDB=True),
+            [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Reading list of tests to rebaseline from %s\n' %
+            test_name_file,
+            'INFO: Rebaselining one/missing.html\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+        ])
 
     def test_execute_with_no_issue_number_aborts(self):
         # If the user hasn't uploaded a CL, an error message is printed.
@@ -637,7 +648,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         path = port.host.filesystem.join(port.web_tests_dir(),
                                          'one/flaky-fail.html')
         self._write(path, 'contents')
-        test_baseline_set = TestBaselineSet(self.tool)
+        test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('one/flaky-fail.html',
                               Build('MOCK Try Win', 5000, 'Build-1'),
                               'blink_web_tests (with patch)')
@@ -842,7 +853,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
 
     def test_fill_in_missing_results(self):
-        test_baseline_set = TestBaselineSet(self.tool)
+        test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('one/flaky-fail.html',
                               Build('MOCK Try Linux', 100),
                               'blink_web_tests (with patch)')
@@ -884,7 +895,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'is_try_builder': True,
             },
         })
-        test_baseline_set = TestBaselineSet(self.tool)
+        test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100))
         test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200))
         self.command.fill_in_missing_results(test_baseline_set)
