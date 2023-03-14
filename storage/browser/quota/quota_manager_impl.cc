@@ -724,8 +724,11 @@ class QuotaManagerImpl::BucketDataDeleter {
                          weak_factory_.GetWeakPtr()));
       return;
     }
-    Complete(base::unexpected(error_count_ == 0 ? QuotaError::kNone
-                                                : QuotaError::kUnknownError));
+    if (error_count_ == 0) {
+      Complete(base::ok(nullptr));
+    } else {
+      Complete(base::unexpected(QuotaError::kUnknownError));
+    }
   }
 
   void DidDeleteBucketFromDatabase(
@@ -1385,10 +1388,9 @@ void QuotaManagerImpl::DeleteBucketData(const BucketLocator& bucket,
   auto result_callback = base::BindOnce(
       [](StatusCallback callback,
          QuotaErrorOr<mojom::BucketTableEntryPtr> result) {
-        std::move(callback).Run(
-            (result.has_value() || result.error() == QuotaError::kNone)
-                ? blink::mojom::QuotaStatusCode::kOk
-                : blink::mojom::QuotaStatusCode::kUnknown);
+        std::move(callback).Run(result.has_value()
+                                    ? blink::mojom::QuotaStatusCode::kOk
+                                    : blink::mojom::QuotaStatusCode::kUnknown);
       },
       std::move(callback));
   DeleteBucketDataInternal(bucket, std::move(quota_client_types),
@@ -2076,6 +2078,7 @@ void QuotaManagerImpl::DidEvictBucketData(
   DCHECK(io_thread_->BelongsToCurrentThread());
 
   if (entry.has_value()) {
+    DCHECK(entry.value());
     base::Time now = QuotaDatabase::GetNow();
     base::UmaHistogramCounts1M(
         QuotaManagerImpl::kEvictedBucketAccessedCountHistogram,
@@ -2760,10 +2763,9 @@ void QuotaManagerImpl::DidGetBucketForDeletion(
   auto result_callback = base::BindOnce(
       [](StatusCallback callback,
          QuotaErrorOr<mojom::BucketTableEntryPtr> result) {
-        std::move(callback).Run(
-            (result.has_value() || result.error() == QuotaError::kNone)
-                ? blink::mojom::QuotaStatusCode::kOk
-                : blink::mojom::QuotaStatusCode::kUnknown);
+        std::move(callback).Run(result.has_value()
+                                    ? blink::mojom::QuotaStatusCode::kOk
+                                    : blink::mojom::QuotaStatusCode::kUnknown);
       },
       std::move(callback));
   DeleteBucketDataInternal(result->ToBucketLocator(), AllQuotaClientTypes(),
