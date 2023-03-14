@@ -79,6 +79,7 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
 
  private:
   UDPSocket socket_;
+  bool connect_called_ = false;
   // The network the socket is currently bound to.
   handles::NetworkHandle network_;
   handles::NetworkHandle connect_using_network_;

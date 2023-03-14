@@ -1626,16 +1626,18 @@ TEST_F(UDPSocketTest, LimitClientSocket) {
   socket2.reset();
   EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
 
-  // Now that the count is below limit, try to connect socket3 again. This time
+  // Now that the count is below limit, try to connect another socket. This time
   // it will work.
-  EXPECT_THAT(socket3->Connect(server_address), IsOk());
+  auto socket4 = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
+                                                   nullptr, NetLogSource());
+  EXPECT_THAT(socket4->Connect(server_address), IsOk());
   EXPECT_EQ(2, GetGlobalUDPSocketCountForTesting());
 
   // Verify that closing the two remaining sockets brings the open count back to
   // 0.
   socket1.reset();
   EXPECT_EQ(1, GetGlobalUDPSocketCountForTesting());
-  socket3.reset();
+  socket4.reset();
   EXPECT_EQ(0, GetGlobalUDPSocketCountForTesting());
 }
 

@@ -99,7 +99,6 @@ class NET_EXPORT UDPSocketPosix {
   int Bind(const IPEndPoint& address);
 
   // Closes the socket.
-  // TODO(rvargas, hidehiko): Disallow re-Open() after Close().
   void Close();
 
   // Copies the remote udp address into |address| and returns a net error code.
