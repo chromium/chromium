@@ -69,7 +69,7 @@ const int kMaxBookmarksSearchResults = 50;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // The browser for this mediator.
-  Browser* _browser;
+  base::WeakPtr<Browser> _browser;
   // The sync setup service for this mediator.
   SyncSetupService* _syncSetupService;
 }
@@ -91,8 +91,9 @@ const int kMaxBookmarksSearchResults = 50;
 - (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
                             browser:(Browser*)browser {
   if ((self = [super init])) {
+    DCHECK(browser);
     _sharedState = sharedState;
-    _browser = browser;
+    _browser = browser->AsWeakPtr();
   }
   return self;
 }
@@ -109,7 +110,7 @@ const int kMaxBookmarksSearchResults = 50;
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
   _bookmarkPromoController =
-      [[BookmarkPromoController alloc] initWithBrowser:_browser
+      [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                               delegate:self
                                              presenter:self];
 

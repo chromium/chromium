@@ -25,7 +25,7 @@
 @interface BookmarkPromoController () <SigninPromoViewConsumer,
                                        IdentityManagerObserverBridgeDelegate> {
   bool _isIncognito;
-  Browser* _browser;
+  base::WeakPtr<Browser> _browser;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
 }
@@ -45,6 +45,7 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
                       presenter:(id<SigninPresenter>)presenter {
+  DCHECK(browser);
   self = [super init];
   if (self) {
     _delegate = delegate;
@@ -54,7 +55,7 @@
     // it.
     _isIncognito = browserState->IsOffTheRecord();
     if (!_isIncognito) {
-      _browser = browser;
+      _browser = browser->AsWeakPtr();
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(
               IdentityManagerFactory::GetForBrowserState(browserState), self));

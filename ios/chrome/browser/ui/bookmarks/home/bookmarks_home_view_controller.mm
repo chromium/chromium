@@ -147,6 +147,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 @property(nonatomic, assign) bookmarks::BookmarkModel* profileBookmarks;
 
 // The Browser in which bookmarks are presented
+// TODO(crbug.com/1423926): Need to convert this property into:
+// base::WeakPtr<Browser> _browser.
 @property(nonatomic, assign) Browser* browser;
 
 // The user's browser state model used.
