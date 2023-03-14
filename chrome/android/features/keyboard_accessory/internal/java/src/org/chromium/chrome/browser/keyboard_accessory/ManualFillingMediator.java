@@ -593,6 +593,10 @@ class ManualFillingMediator
 
     @Override
     public void onBarFadeInAnimationEnd() {
+        if (requiresVisibleSheet(mModel.get(KEYBOARD_EXTENSION_STATE))
+                && !ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
+            return;
+        }
         mActivity.getCurrentWebContents().scrollFocusedEditableNodeIntoView();
     }
 
