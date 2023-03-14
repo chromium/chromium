@@ -1179,6 +1179,14 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/^\s*(import|export|module)\b',
+      (
+        'Modules are disallowed for now due to lack of toolchain support.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
       r'/\[\[(un)?likely\]\]',
       (
         '[[likely]] and [[unlikely]] are not yet allowed ',
