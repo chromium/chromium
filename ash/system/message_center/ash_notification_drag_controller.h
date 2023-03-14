@@ -57,6 +57,7 @@ class AshNotificationDragController
   bool CanStartDragForView(views::View* sender,
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
+  void OnWillStartDragForView(views::View* dragged_view) override;
 
   void OnNotificationDragWillStart(AshNotificationView* dragged_view);
 

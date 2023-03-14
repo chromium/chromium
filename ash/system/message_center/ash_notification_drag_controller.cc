@@ -118,16 +118,18 @@ bool AshNotificationDragController::CanStartDragForView(
     if (drag_in_progress_) {
       CleanUp();
     }
-
-    OnNotificationDragWillStart(notification_view);
   }
 
   return can_start_drag;
 }
 
+void AshNotificationDragController::OnWillStartDragForView(
+    views::View* dragged_view) {
+  OnNotificationDragWillStart(static_cast<AshNotificationView*>(dragged_view));
+}
+
 void AshNotificationDragController::OnNotificationDragWillStart(
     AshNotificationView* dragged_view) {
-  DCHECK(dragged_view);
   DCHECK(!drag_in_progress_);
   dragged_notification_id_ = dragged_view->notification_id();
 
