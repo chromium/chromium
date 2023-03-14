@@ -1353,6 +1353,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface simulatePhysicalKeyboardEvent:input flags:flags];
 }
 
+#pragma mark - Default Utilities (EG2)
+
+- (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName {
+  return [ChromeEarlGreyAppInterface setUserDefaultObject:value
+                                                   forKey:defaultName];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 // Returns a base::Value representation of the requested pref.

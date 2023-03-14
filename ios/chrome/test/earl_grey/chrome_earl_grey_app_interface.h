@@ -561,6 +561,11 @@
 // Resets the desktop content setting to its default value.
 + (void)resetDesktopContentSetting;
 
+#pragma mark - Default Utilities (EG2)
+
+// Stores a value for the provided key in NSUserDefaults.
++ (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref. Returns a

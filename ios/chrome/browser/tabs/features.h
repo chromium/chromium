@@ -5,11 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_TABS_FEATURES_H_
 #define IOS_CHROME_BROWSER_TABS_FEATURES_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/feature_list.h"
 
 // Feature flags that enables Pinned Tabs.
 BASE_DECLARE_FEATURE(kEnablePinnedTabs);
 BASE_DECLARE_FEATURE(kEnablePinnedTabsIpad);
+
+// User default key used to determine if Pinned Tabs was used in the overflow
+// menu.
+extern NSString* const kPinnedTabsOverflowEntryKey;
 
 // Feature parameter for Pinned Tabs.
 extern const char kEnablePinnedTabsOverflowParam[];

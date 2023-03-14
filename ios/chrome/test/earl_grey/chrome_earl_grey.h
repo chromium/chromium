@@ -719,6 +719,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
 
+#pragma mark - Default Utilities (EG2)
+
+// Stores a value for the provided key in NSUserDefaults.
+- (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref.

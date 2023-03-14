@@ -32,6 +32,7 @@ struct OverflowMenuActionRow: View {
           Text(action.name).lineLimit(1)
           if action.displayNewLabelIcon {
             newLabelIconView()
+              .accessibilityIdentifier("overflowRowIPHBadgeIdentifier")
           }
           Spacer()
           imageBuilder().frame(

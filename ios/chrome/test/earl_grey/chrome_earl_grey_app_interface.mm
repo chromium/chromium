@@ -1204,6 +1204,13 @@ NSString* SerializedValue(const base::Value* value) {
                                  CONTENT_SETTING_BLOCK);
 }
 
+#pragma mark - Default Utilities (EG2)
+
+// Stores a value for the provided key in NSUserDefaults.
++ (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName {
+  [[NSUserDefaults standardUserDefaults] setObject:value forKey:defaultName];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 + (NSString*)localStatePrefValue:(NSString*)prefName {
