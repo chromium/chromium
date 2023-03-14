@@ -119,7 +119,7 @@ class AudioScheduledSourceHandler
 
   // This synchronizes with process() and any other method that needs to be
   // synchronized like setBuffer for AudioBufferSource.
-  mutable recordreplay::ReplayBaseLock process_lock_;
+  mutable base::Lock process_lock_;
 
   // |start_time_| is the time to start playing based on the context's timeline
   // (0 or a time less than the context's current time means "now").

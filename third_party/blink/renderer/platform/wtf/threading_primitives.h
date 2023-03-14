@@ -67,6 +67,7 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
   // Private constructor to ensure that no new users appear. This class will be
   // removed.
   RecursiveMutex() = default;
+  RecursiveMutex(const char* replay_ordered_name);
   void UpdateStateAfterLockAcquired(base::PlatformThreadId thread_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -84,38 +85,8 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
   FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockThreads);
 };
 
-class LOCKABLE WTF_EXPORT ReplayOrderedRecursiveMutex {
- public:
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION();
-  void unlock() UNLOCK_FUNCTION();
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    // TS_UNCHECKED_READ: Either we are the owner and then the value can be
-    // read, or we aren't, and we are guaranteed to not see our own thread ID.
-    DCHECK_EQ(TS_UNCHECKED_READ(owner_), base::PlatformThread::CurrentId());
-  }
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
-
- private:
-  // Private constructor to ensure that no new users appear. This class will be
-  // removed.
-  ReplayOrderedRecursiveMutex();
-  void UpdateStateAfterLockAcquired(base::PlatformThreadId thread_id);
-
-  int lock_number_;
-  // Atomic only used to avoid load shearing.
-  std::atomic<base::PlatformThreadId> owner_ =
-      base::kInvalidThreadId;
-  uint64_t lock_depth_ = 0;
-
-  // DO NOT ADD any new caller.
-  friend class ::blink::DeferredTaskHandler;
-};
-
 }  // namespace WTF
 
 using WTF::RecursiveMutex;
-using WTF::ReplayOrderedRecursiveMutex;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_

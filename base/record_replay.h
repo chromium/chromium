@@ -44,26 +44,6 @@ struct AutoOrderedLock {
   int id_;
 };
 
-// Drop in replacement for base::Lock that can be used with
-// mixed 'auto' and 'try' lockers.
-class LOCKABLE ReplayBaseLock {
-public:
-
-  ReplayBaseLock(const char* ordered_name = nullptr);
-  ~ReplayBaseLock();
-
-  void Acquire() EXCLUSIVE_LOCK_FUNCTION();
-
-  void Release() UNLOCK_FUNCTION();
-
-  bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
-
-private:
-  base::Lock lock_;
-  int ordered_id_;
-  const char* ordered_name_;
-};
-
 void InvalidateRecording(const char* why);
 void NewCheckpoint();
 
@@ -272,40 +252,6 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
 
  private:
   base::Lock& lock_;
-};
-
-
-
-class SCOPED_LOCKABLE ReplayAutoLock {
-public:
-  explicit ReplayAutoLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
-
-  ReplayAutoLock(const ReplayAutoLock&) = delete;
-  ReplayAutoLock& operator=(const ReplayAutoLock&) = delete;
-
-  ~ReplayAutoLock() UNLOCK_FUNCTION();
-
-private:
-  ReplayBaseLock& lock_;
-
-};
-
-
-
-class SCOPED_LOCKABLE ReplayAutoTryLock {
- public:
-  explicit ReplayAutoTryLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
-
-  ReplayAutoTryLock(const ReplayAutoTryLock&) = delete;
-  ReplayAutoTryLock& operator=(const ReplayAutoTryLock&) = delete;
-
-  ~ReplayAutoTryLock() UNLOCK_FUNCTION();
-
-  bool is_acquired() const;
-
-private:
-  ReplayBaseLock& lock_;
-  bool is_acquired_;
 };
 
 

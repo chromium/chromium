@@ -799,6 +799,8 @@ void AudioContext::HandleAudibility(AudioBus* destination_bus) {
   }
 
   if (was_audible_ != is_audible) {
+    // No issue associated with this assert--just in case there are more divergence issues
+    // in webaudio, this is a pretty good spot to trip them.
     recordreplay::Assert("AudioContext::HandleAudibility %d %d", was_audible_, is_audible);
 
     // Audibility changed in this render, so report the change.

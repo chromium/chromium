@@ -77,7 +77,7 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
   }
 
   // The audio thread can't block on this lock, so we call TryLock() instead.
-  recordreplay::ReplayAutoTryLock try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     if (!Buffer()) {
       output_bus->Zero();
@@ -406,7 +406,7 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
   BaseAudioContext::GraphAutoLocker context_locker(Context());
 
   // This synchronizes with process().
-  recordreplay::ReplayAutoLock process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   if (!buffer) {
     // Clear out the shared buffer.
@@ -556,7 +556,7 @@ void AudioBufferSourceHandler::StartSource(double when,
 
   // This synchronizes with process(). updateSchedulingInfo will read some of
   // the variables being set here.
-  recordreplay::ReplayAutoLock process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   is_duration_given_ = is_duration_given;
   is_grain_ = true;
@@ -579,7 +579,7 @@ void AudioBufferSourceHandler::SetLoop(bool looping) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  recordreplay::ReplayAutoLock process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   is_looping_ = looping;
   SetDidSetLooping(looping);
@@ -589,7 +589,7 @@ void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  recordreplay::ReplayAutoLock process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   loop_start_ = loop_start;
 }
@@ -598,7 +598,7 @@ void AudioBufferSourceHandler::SetLoopEnd(double loop_end) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  recordreplay::ReplayAutoLock process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   loop_end_ = loop_end;
 }
@@ -652,7 +652,7 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
 
   // Protect `shared_buffer_` with TryLock because it can be accessed by the
   // main thread.
-  recordreplay::ReplayAutoTryLock try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     return !shared_buffer_.get();
   } else {
@@ -665,7 +665,7 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {
   DCHECK(Context()->IsAudioThread());
 
-  recordreplay::ReplayAutoTryLock try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
   if (!try_locker.is_acquired()) {
     // Can't get the lock, so just return.  It's ok to handle these at a later
     // time; this was just a hint anyway so stopping them a bit later is ok.

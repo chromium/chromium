@@ -282,11 +282,11 @@ class MODULES_EXPORT DeferredTaskHandler final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Graph locking.
-  ReplayOrderedRecursiveMutex context_graph_mutex_;
+  RecursiveMutex context_graph_mutex_;
 
   // Protects `rendering_automatic_pull_handlers_` when updating, processing,
   // and clearing. (See crbug.com/1061018)
-  mutable recordreplay::ReplayBaseLock automatic_pull_handlers_lock_;
+  mutable base::Lock automatic_pull_handlers_lock_;
 
   std::atomic<base::PlatformThreadId> audio_thread_;
 };

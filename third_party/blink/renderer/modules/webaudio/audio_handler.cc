@@ -25,6 +25,7 @@ AudioHandler::AudioHandler(NodeType node_type,
     : node_(&node),
       context_(node.context()),
       deferred_task_handler_(&context_->GetDeferredTaskHandler()) {
+  // Registered for set/map key determinism.
   recordreplay::RegisterPointer("AudioHandler", this);
 
   SetNodeType(node_type);

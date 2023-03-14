@@ -31,6 +31,7 @@ namespace blink {
 
 AudioSummingJunction::AudioSummingJunction(DeferredTaskHandler& handler)
     : deferred_task_handler_(&handler) {
+  // Registered for set/map key determinism.
   recordreplay::RegisterPointer("AudioSummingJunction", this);
 }
 

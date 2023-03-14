@@ -122,7 +122,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
   AudioBus* output_bus = Output(0).Bus();
 
   {
-    recordreplay::ReplayAutoTryLock try_locker(buffer_lock_);
+    base::AutoTryLock try_locker(buffer_lock_);
     if (!try_locker.is_acquired()) {
       // Failed to acquire the output buffer, so output silence.
       TRACE_EVENT_INSTANT0(
