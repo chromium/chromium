@@ -80,6 +80,13 @@ interface AcceleratorConfigurationProvider {
                     SimpleAccelerator accelerator)
         => (AcceleratorResultData result);
 
+  // Resets the accelerators of `action_id` to the system defaults. This will
+  // remove any user added accelerators. If a default accelerator is used by
+  // another accelerator, it will be disable for `action_id`.
+  RestoreDefault(ash.mojom.AcceleratorSource source,
+                 uint32 action_id)
+        => (AcceleratorResultData result);
+
   // Restore all accelerators to their system-provided default state, overriding
   // user customization.
   RestoreAllDefaults() => (AcceleratorResultData result);

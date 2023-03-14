@@ -37,6 +37,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('addUserAccelerator');
     this.methods.register('replaceAccelerator');
     this.methods.register('removeAccelerator');
+    this.methods.register('restoreDefault');
     this.methods.register('restoreAllDefaults');
     this.methods.register('restoreActionDefaults');
     this.methods.register('addObserver');
@@ -107,6 +108,15 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     result.result = AcceleratorConfigResult.kSuccess;
     this.methods.setResult('removeAccelerator', {result});
     return this.methods.resolveMethod('removeAccelerator');
+  }
+
+  restoreDefault(_source: AcceleratorSource, _actionId: number):
+      Promise<{result: AcceleratorResultData}> {
+    // Always return kSuccess in this fake.
+    const result = new AcceleratorResultData();
+    result.result = AcceleratorConfigResult.kSuccess;
+    this.methods.setResult('restoreDefault', {result});
+    return this.methods.resolveMethod('restoreDefault');
   }
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {

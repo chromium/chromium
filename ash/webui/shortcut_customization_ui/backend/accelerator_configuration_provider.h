@@ -74,6 +74,9 @@ class AcceleratorConfigurationProvider
                          uint32_t action_id,
                          const ui::Accelerator& accelerator,
                          RemoveAcceleratorCallback callback) override;
+  void RestoreDefault(mojom::AcceleratorSource source,
+                      uint32_t action_id,
+                      RestoreDefaultCallback callback) override;
   void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
 
   // ui::InputDeviceEventObserver:

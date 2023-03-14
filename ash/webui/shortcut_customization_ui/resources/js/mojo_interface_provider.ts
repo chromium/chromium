@@ -107,6 +107,11 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.addObserver(observer);
   }
 
+  restoreDefault(source: AcceleratorSource, actionId: number):
+      Promise<{result: AcceleratorResultData}> {
+    return this.fakeProvider.restoreDefault(source, actionId);
+  }
+
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
     return this.remote.restoreAllDefaults();
   }

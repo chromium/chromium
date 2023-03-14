@@ -318,6 +318,33 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   std::move(callback).Run(std::move(result_data));
 }
 
+void AcceleratorConfigurationProvider::RestoreDefault(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    RestoreDefaultCallback callback) {
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  // Restoring an action is only supported for ash accelerators.
+  if (source != mojom::AcceleratorSource::kAsh) {
+    result_data->result = AcceleratorConfigResult::kActionLocked;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
+  // fail, return `kNotFound`.
+  if (!ash_accelerator_configuration_->IsValid(action_id)) {
+    result_data->result = AcceleratorConfigResult::kNotFound;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  AcceleratorConfigResult result =
+      ash_accelerator_configuration_->RestoreDefault(action_id);
+  result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
+}
+
 void AcceleratorConfigurationProvider::RestoreAllDefaults(
     RestoreAllDefaultsCallback callback) {
   CHECK(::features::IsShortcutCustomizationEnabled());
