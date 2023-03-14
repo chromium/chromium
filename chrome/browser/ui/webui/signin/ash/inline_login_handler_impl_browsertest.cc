@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -224,12 +225,10 @@ class InlineLoginHandlerTest
         absl::nullopt /* cookie_partition_key */);
     content::StoragePartition* partition =
         signin::GetSigninPartition(web_contents()->GetBrowserContext());
-    base::RunLoop run_loop;
+    base::test::TestFuture<net::CookieAccessResult> future;
     partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
-        *cookie_obj, url, options,
-        base::BindLambdaForTesting(
-            [&](net::CookieAccessResult status) { run_loop.Quit(); }));
-    run_loop.Run();
+        *cookie_obj, url, options, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
 
     // Setup fake Gaia.
     FakeGaia::MergeSessionParams params;
@@ -323,11 +322,11 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
   }
 
   // Wait until account is added.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer,
               OnAccountUpserted(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  run_loop.Run();
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
@@ -343,11 +342,11 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   // Wait until account is added.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer,
               OnAccountUpserted(AccountEmailEq(GetDeviceAccountInfo().email)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  run_loop.Run();
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
@@ -382,16 +381,17 @@ class InlineLoginHandlerTestWithArcRestrictions
     auto* account_apps_availability =
         AccountAppsAvailabilityFactory::GetForProfile(profile());
 
-    // Wait until account is added.
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     EXPECT_CALL(observer, OnAccountUpserted(AccountEmailEq(email)))
-        .WillOnce([&run_loop, account_apps_availability, is_available_in_arc](
-                      const account_manager::Account& account) {
-          account_apps_availability->SetIsAccountAvailableInArc(
-              account, is_available_in_arc);
-          run_loop.Quit();
-        });
+        .WillOnce(testing::DoAll(
+            base::test::RunOnceClosure(future.GetCallback()),
+            [account_apps_availability,
+             is_available_in_arc](const account_manager::Account& account) {
+              account_apps_availability->SetIsAccountAvailableInArc(
+                  account, is_available_in_arc);
+            }));
     identity_test_env()->MakeAccountAvailable(email);
+    EXPECT_TRUE(future.Wait());
   }
 
   bool ValuesListContainAccount(const base::Value::List& values,
@@ -460,18 +460,18 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
   }
 
   // Wait until account is added.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer,
               OnAccountUpserted(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  run_loop.Run();
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
   // Make sure that account was added to ARC.
-  base::RunLoop run_loop_1;
+  base::test::TestFuture<void> future2;
   EXPECT_CALL(apps_availability_observer,
               OnAccountAvailableInArc(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunClosure(run_loop_1.QuitClosure()));
-  run_loop_1.Run();
+      .WillOnce(base::test::RunOnceClosure(future2.GetCallback()));
+  EXPECT_TRUE(future2.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
@@ -496,11 +496,11 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   // Wait until account is added.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer,
               OnAccountUpserted(AccountEmailEq(GetDeviceAccountInfo().email)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  run_loop.Run();
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
   // Make sure that ARC availability didn't change for account.
   EXPECT_CALL(apps_availability_observer, OnAccountAvailableInArc).Times(0);
