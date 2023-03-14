@@ -1,6 +1,9 @@
 specific_include_rules = {
   "(server_printers_fetcher|server_printers_provider_unittest)\.cc": [
     # IPP protocol; it is needed for communication with print servers.
-    "+third_party/libipp/libipp/ipp.h",
+    "+third_party/libipp/libipp/builder.h",
+    "+third_party/libipp/libipp/frame.h",
+    "+third_party/libipp/libipp/parser.h",
+    "+third_party/libipp/libipp/validator.h",
   ],
 }

@@ -21,7 +21,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libipp/libipp/ipp.h"
+#include "third_party/libipp/libipp/builder.h"
+#include "third_party/libipp/libipp/frame.h"
 
 namespace ash {
 
@@ -109,15 +110,14 @@ class ServerPrintersProviderTest : public ::testing::Test {
 
   std::string CreateResponse(const std::string& name,
                              const std::string& description) {
-    ipp::Response_CUPS_Get_Printers response;
-    response.printer_attributes[0].printer_name.Set(
-        ipp::StringWithLanguage(name, "us-EN"));
-    response.printer_attributes[0].printer_info.Set(
-        ipp::StringWithLanguage(description, "us-EN"));
-    ipp::Server server(ipp::Version::_1_1, 1);
-    server.BuildResponseFrom(&response);
-    std::vector<uint8_t> bin_data;
-    EXPECT_TRUE(server.WriteResponseFrameTo(&bin_data));
+    ipp::Frame response(ipp::Operation::CUPS_Get_Printers);
+    ipp::CollsView::iterator grp;
+    response.AddGroup(ipp::GroupTag::printer_attributes, grp);
+    grp->AddAttr("printer-name", ipp::ValueTag::nameWithLanguage,
+                 ipp::StringWithLanguage(name, "us-EN"));
+    grp->AddAttr("printer-info", ipp::ValueTag::textWithLanguage,
+                 ipp::StringWithLanguage(description, "us-EN"));
+    std::vector<uint8_t> bin_data = ipp::BuildBinaryFrame(response);
     std::string response_body(bin_data.begin(), bin_data.end());
     return response_body;
   }

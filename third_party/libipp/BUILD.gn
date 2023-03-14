@@ -2,35 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-config("libipp_private_config") {
-  # TODO(crbug.com/1243431): Remove this once libipp has rolled past
-  # https://chromium.googlesource.com/chromiumos/platform2/+/69ae7eb2d0104
-  cflags = [ "-Wno-unreachable-code-return" ]
-}
-
 static_library("libipp") {
   include_dirs = [ "." ]
-  configs += [ ":libipp_private_config" ]
   sources = [
-    "libipp/ipp.h",
+    "libipp/attribute.h",
+    "libipp/builder.cc",
+    "libipp/builder.h",
+    "libipp/colls_view.cc",
+    "libipp/colls_view.h",
+    "libipp/errors.cc",
+    "libipp/errors.h",
+    "libipp/frame.cc",
+    "libipp/frame.h",
     "libipp/ipp_attribute.cc",
     "libipp/ipp_attribute.h",
-    "libipp/ipp_base.cc",
-    "libipp/ipp_base.h",
-    "libipp/ipp_collections.cc",
-    "libipp/ipp_collections.h",
     "libipp/ipp_encoding.h",
     "libipp/ipp_enums.cc",
     "libipp/ipp_enums.h",
     "libipp/ipp_export.h",
     "libipp/ipp_frame.h",
-    "libipp/ipp_frame_builder.cc",
-    "libipp/ipp_frame_builder.h",
-    "libipp/ipp_operations.cc",
-    "libipp/ipp_operations.h",
-    "libipp/ipp_package.cc",
-    "libipp/ipp_package.h",
     "libipp/ipp_parser.cc",
     "libipp/ipp_parser.h",
+    "libipp/parser.cc",
+    "libipp/parser.h",
+    "libipp/validator.cc",
+    "libipp/validator.h",
   ]
 }

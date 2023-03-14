@@ -1,6 +1,6 @@
 Name: libipp
 URL: https://chromium.googlesource.com/chromiumos/platform2/libipp
-Version: 6c45a4f3a05cb5dd700414fe4d94cf685159d3ce
+Version: 9f596bfa5c88a9ce332131d0e76c1a50853c93ee
 License: BSD
 License File: LICENSE
 Security Critical: yes
@@ -12,6 +12,6 @@ Modifications:
 - None
 
 To import a new snapshot of libipp:
-- Checkout the latest version: git checkout 6c45a4f3a05cb5dd700414fe4d94cf685159d3ce
-- Change the chromium/src/DEPS entry to the newly checked out commit.
+- roll-dep src/third_party/libipp/libipp.
 - Update this README to reflect the new version number.
+- Update BUILD.gn if needed.
