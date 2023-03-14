@@ -3846,6 +3846,30 @@
             ]
         }
     ],
+    "DesktopOmniboxPerf": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledAll",
+                    "enable_features": [
+                        "OmniboxRedoCurrentMatch",
+                        "OmniboxRevertModelBeforeClosingPopup",
+                        "OmniboxUseExistingAutocompleteClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxPostAutocompletionPreserveDefault": [
         {
             "platforms": [

@@ -371,7 +371,7 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
   // If we have a valid match use it. Otherwise get one for the current text.
   AutocompleteMatch match =
       redo ? current_match_ : omnibox_controller_->current_match();
-  if (!redo && !match.destination_url.is_valid()) {
+  if (!match.destination_url.is_valid()) {
     GetInfoForCurrentText(&match, alternate_nav_url);
   } else if (alternate_nav_url) {
     // Use the existing provider client in the experiment arm, otherwise create
@@ -2146,6 +2146,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   // Cancel the query so the matches don't change on the user.
   autocomplete_controller()->Stop(false);
 
+  // This occurs when e.g. pressing tab to select an action chip or the x delete
+  // icon.
   if (new_selection == popup_selection_ && !force_update_ui) {
     return;  // Nothing else to do.
   }
@@ -2156,7 +2158,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   popup_selection_ = new_selection;
   popup_view_->OnSelectionChanged(old_selection, popup_selection_);
 
+  // This occurs when e.g., pressing escape to select the null match in
+  // zero-input mode.
   if (popup_selection_.line == OmniboxPopupSelection::kNoMatch) {
+    current_match_ = AutocompleteMatch();
     return;
   }
 
