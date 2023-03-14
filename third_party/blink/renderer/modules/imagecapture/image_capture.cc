@@ -636,6 +636,18 @@ bool CheckExactValueConstraint(const Vector<String>& effective_capability,
   return base::Contains(effective_capability, exact_constraint);
 }
 
+// For exact `sequence<DOMString>` constraints and `sequence<DOMString>`
+// effective capabilities such as whiteBalanceMode, exposureMode and focusMode.
+bool CheckExactValueConstraint(const Vector<String>& effective_capability,
+                               const Vector<String>& exact_constraints) {
+  for (const auto& exact_constraint : exact_constraints) {
+    if (base::Contains(effective_capability, exact_constraint)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 using CapabilityExists = base::StrongAlias<class HasCapabilityTag, bool>;
 
 // Check if the existence of a capability satisfies a constraint.
@@ -744,7 +756,12 @@ bool CheckValueConstraint(
     case ContentType::kConstrainPoint2DParameters: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainPoint2DParameters.
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainPoint2DParameters();
+      if (dictionary_constraint->hasExact()) {
+        return CheckExactValueConstraint(effective_setting,
+                                         dictionary_constraint->exact());
+      }
       return true;
     }
   }
@@ -769,7 +786,41 @@ bool CheckValueConstraint(const MediaSettingsRange* effective_capability,
     case ContentType::kConstrainDoubleRange: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainDoubleRange.
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainDoubleRange();
+      if (dictionary_constraint->hasExact()) {
+        const double exact_constraint = dictionary_constraint->exact();
+        if (dictionary_constraint->hasMax() &&
+            exact_constraint > dictionary_constraint->max()) {
+          return false;  // Reject self-contradiction.
+        }
+        if (dictionary_constraint->hasMin() &&
+            exact_constraint < dictionary_constraint->min()) {
+          return false;  // Reject self-contradiction.
+        }
+        if (!CheckExactValueConstraint(effective_capability,
+                                       exact_constraint)) {
+          return false;
+        }
+      }
+      if (dictionary_constraint->hasMax()) {
+        const double max_constraint = dictionary_constraint->max();
+        if (dictionary_constraint->hasMin() &&
+            max_constraint < dictionary_constraint->min()) {
+          return false;  // Reject self-contradiction.
+        }
+        if (effective_capability->hasMin() &&
+            max_constraint < effective_capability->min()) {
+          return false;
+        }
+      }
+      if (dictionary_constraint->hasMin()) {
+        const double min_constraint = dictionary_constraint->min();
+        if (effective_capability->hasMax() &&
+            min_constraint > effective_capability->max()) {
+          return false;
+        }
+      }
       return true;
     }
   }
@@ -813,7 +864,12 @@ bool CheckValueConstraint(
     case ContentType::kConstrainBooleanParameters: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainBooleanParameters.
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainBooleanParameters();
+      if (dictionary_constraint->hasExact()) {
+        const bool exact_constraint = dictionary_constraint->exact();
+        return base::Contains(effective_capability, exact_constraint);
+      }
       return true;
     }
   }
@@ -838,12 +894,32 @@ bool CheckValueConstraint(
                                          constraint->GetAsString());
       }
       return true;
-    default:
+    case ContentType::kStringSequence:
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for StringSequence and for
-      // ConstrainDOMStringParameters.
+      if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
+        return CheckExactValueConstraint(effective_capability,
+                                         constraint->GetAsStringSequence());
+      }
       return true;
+    case ContentType::kConstrainDOMStringParameters: {
+      DCHECK_NE(constraint_set_type,
+                MediaTrackConstraintSetType::kFirstAdvanced);
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainDOMStringParameters();
+      if (dictionary_constraint->hasExact()) {
+        const auto* exact_constraint = dictionary_constraint->exact();
+        switch (exact_constraint->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            return CheckExactValueConstraint(effective_capability,
+                                             exact_constraint->GetAsString());
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            return CheckExactValueConstraint(
+                effective_capability, exact_constraint->GetAsStringSequence());
+        }
+      }
+      return true;
+    }
   }
 }
 
