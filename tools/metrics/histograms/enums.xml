@@ -61491,6 +61491,7 @@ from previous Chrome versions.
   <int value="-279208712" label="isolated-prerender-nsp-enabled"/>
   <int value="-278410617" label="TabScrollingButtonPosition:disabled"/>
   <int value="-278347667" label="default-tile-height"/>
+  <int value="-278230768" label="CameraAppTimeLapse:enabled"/>
   <int value="-277144896" label="enable-viewport-meta"/>
   <int value="-276946251" label="AppServiceShelf:disabled"/>
   <int value="-276907217" label="EventPath:enabled"/>
@@ -62577,6 +62578,7 @@ from previous Chrome versions.
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
+  <int value="336105835" label="CameraAppTimeLapse:disabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
