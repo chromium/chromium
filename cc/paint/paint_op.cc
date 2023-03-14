@@ -92,44 +92,18 @@ void DrawImageRect(SkCanvas* canvas,
                    SkCanvas::SrcRectConstraint constraint) {
   if (!image)
     return;
-  if (constraint != SkCanvas::kStrict_SrcRectConstraint ||
-      options.mipmap == SkMipmapMode::kNone) {
-    canvas->drawImageRect(image, src, dst, options, paint, constraint);
-    return;
-  }
-  // Skia downgrades to SkMipmap::kNone if kStrict_SrcRectConstraint is used
-  // with drawImageRect.
-  SkMatrix m;
-  m.setRectToRect(src, dst, SkMatrix::ScaleToFit::kFill_ScaleToFit);
-  if (src.contains(SkRect::Make(image->dimensions()))) {
+  if (constraint == SkCanvas::kStrict_SrcRectConstraint &&
+      options.mipmap != SkMipmapMode::kNone &&
+      src.contains(SkRect::Make(image->dimensions()))) {
+    SkMatrix m;
+    m.setRectToRect(src, dst, SkMatrix::ScaleToFit::kFill_ScaleToFit);
     canvas->save();
     canvas->concat(m);
     canvas->drawImage(image, 0, 0, options, paint);
     canvas->restore();
     return;
   }
-  // Draw a rect with an image shader wrapped in another shader that clamps
-  // the coordinates to a half pixel inset of the original source rectangle.
-  // This means in the base MIP level there will be no bleed from filtering.
-  // This matches Skia's behavior prior to changes related to skbug.com/13078
-  sk_sp<SkShader> shader = image->makeShader(options);
-  SkRect clampRect = src.makeInset(0.5f, 0.5f);
-  if (clampRect.width() < 0) {
-    clampRect.fLeft = clampRect.fRight = clampRect.centerX();
-  }
-  if (clampRect.height() < 0) {
-    clampRect.fTop = clampRect.fBottom = clampRect.centerY();
-  }
-  shader = SkShaders::CoordClamp(std::move(shader), clampRect);
-  // The matrix must happen outside of the clamp so that the clamp is in the
-  // image coordinate space.
-  shader = shader->makeWithLocalMatrix(m);
-  SkPaint shaderPaint;
-  if (paint) {
-    shaderPaint = *paint;
-  }
-  shaderPaint.setShader(std::move(shader));
-  canvas->drawRect(dst, shaderPaint);
+  canvas->drawImageRect(image, src, dst, options, paint, constraint);
 }
 
 #define TYPES(M)      \
