@@ -593,6 +593,15 @@ base::GUID DesksClient::GetActiveDesk() {
   return desks_controller_->GetTargetActiveDesk()->uuid();
 }
 
+base::expected<const ash::Desk*, DesksClient::DeskActionError>
+DesksClient::GetDeskByID(const base::GUID& desk_uuid) const {
+  ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
+  if (!desk) {
+    return base::unexpected(DeskActionError::kResourceNotFoundError);
+  }
+  return desk;
+}
+
 absl::optional<DesksClient::DeskActionError> DesksClient::SwitchDesk(
     const base::GUID& desk_uuid) {
   ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);

@@ -218,4 +218,15 @@ void WMDesksPrivateFeatureAsh::SwitchDesk(const base::GUID& desk_uuid,
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
+void WMDesksPrivateFeatureAsh::GetDeskByID(const base::GUID& desk_uuid,
+                                           GetDeskByIDCallback callback) {
+  auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
+  if (!result.has_value()) {
+    std::move(callback).Run(GetStringError(result.error()), {});
+    return;
+  }
+  api::wm_desks_private::Desk desk = GetDeskFromAshDesk(*result.value());
+  std::move(callback).Run("", std::move(desk));
+}
+
 }  // namespace extensions

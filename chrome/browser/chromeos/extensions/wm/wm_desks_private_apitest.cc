@@ -352,4 +352,53 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndDeleteDeskTest) {
       new_browser);
 }
 
+// Tests retrieve desk with deskID.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByIDTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Get current desk id.
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>().get(),
+          "[]", new_browser);
+
+  // Retrieve desk by Id.
+  auto get_desk_by_id_function =
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
+  auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      get_desk_by_id_function.get(), R"([")" + desk_id->GetString() + R"("])",
+      new_browser);
+  EXPECT_TRUE(result->is_dict());
+  auto* desk_id_1 = result->GetDict().Find("deskUuid");
+  auto* desk_name = result->GetDict().Find("deskName");
+  ASSERT_TRUE(desk_id_1->is_string());
+  EXPECT_EQ(desk_id->GetString(), desk_id_1->GetString());
+  EXPECT_TRUE(desk_name->is_string());
+}
+
+// Tests retrieve desk with invalid deskID.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByInvalidIDTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Retrieve desk by Id.
+  auto get_desk_by_id_function =
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
+  auto error = extension_function_test_utils::RunFunctionAndReturnError(
+      get_desk_by_id_function.get(), R"(["invalid-id"])", new_browser);
+  EXPECT_EQ(error, "InvalidIdError");
+}
+
+// Tests retrieve desk with non-exist deskID.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByNonExistIDTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  auto desk_id = base::GUID::GenerateRandomV4().AsLowercaseString();
+  // Retrieve desk by Id.
+  auto get_desk_by_id_function =
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
+  auto error = extension_function_test_utils::RunFunctionAndReturnError(
+      get_desk_by_id_function.get(), R"([")" + desk_id + R"("])", new_browser);
+  EXPECT_EQ(error, "ResourceNotFoundError");
+}
+
 }  // namespace extensions

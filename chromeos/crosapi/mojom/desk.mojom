@@ -145,6 +145,13 @@ union SwitchDeskResult {
   bool succeeded;
 };
 
+// The response from GetDeskByID API.
+[Stable]
+union GetDeskByIDResult {
+  DeskCrosApiError error;
+  DeskModel desk;
+};
+
 // Interface for desk operations. Implemented by ash-chrome. Used by
 // lacros-chrome to forward the desk operation to support wmDesksPrivate private
 // API.
@@ -191,4 +198,7 @@ interface Desk {
 
   // Switches to the target desk.
   [MinVersion=2]SwitchDesk@10(GUID desk_uuid) => (SwitchDeskResult result);
+
+  // Retrieves desk by its desk ID.
+  [MinVersion=3]GetDeskByID@11(GUID desk_uuid) => (GetDeskByIDResult result);
 };

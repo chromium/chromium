@@ -419,6 +419,7 @@ source_set("unit_tests") {
     "chrome_app_window_tracker_ash_unittest.cc",
     "copy_migrator_unittest.cc",
     "crosapi_util_unittest.cc",
+    "desk_ash_unittest.cc",
     "device_attributes_ash_unittest.cc",
     "device_oauth2_token_service_ash_unittest.cc",
     "device_settings_ash_unittest.cc",

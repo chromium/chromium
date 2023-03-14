@@ -80,7 +80,7 @@ WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
 
   base::GUID uuid = base::GUID::ParseCaseInsensitive(params->template_uuid);
   if (!uuid.is_valid()) {
-    return RespondNow(Error(std::move(kInvalidIdError)));
+    return RespondNow(Error(kInvalidIdError));
   }
 
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
@@ -154,7 +154,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
   base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_id);
   if (!uuid.is_valid()) {
     base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
-    return RespondNow(Error(std::move(kInvalidIdError)));
+    return RespondNow(Error(kInvalidIdError));
   }
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
   desk_impl->RemoveDesk(
@@ -262,7 +262,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateDeleteSavedDeskFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   base::GUID uuid = base::GUID::ParseCaseInsensitive(params->saved_desk_uuid);
   if (!uuid.is_valid()) {
-    return RespondNow(Error(std::move(kInvalidIdError)));
+    return RespondNow(Error(kInvalidIdError));
   }
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
 
@@ -294,7 +294,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRecallSavedDeskFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   base::GUID uuid = base::GUID::ParseCaseInsensitive(params->saved_desk_uuid);
   if (!uuid.is_valid()) {
-    return RespondNow(Error(std::move(kInvalidIdError)));
+    return RespondNow(Error(kInvalidIdError));
   }
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
   desk_impl->RecallSavedDesk(
@@ -349,7 +349,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
   base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_uuid);
   if (!uuid.is_valid()) {
     base::UmaHistogramBoolean(kApiSwitchDeskResult, false);
-    return RespondNow(Error(std::move(kInvalidIdError)));
+    return RespondNow(Error(kInvalidIdError));
   }
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
   desk_impl->SwitchDesk(
@@ -366,6 +366,37 @@ void WmDesksPrivateSwitchDeskFunction::OnSwitchDesk(std::string error_string) {
   }
   base::UmaHistogramBoolean(kApiSwitchDeskResult, true);
   Respond(NoArguments());
+}
+
+WmDesksPrivateGetDeskByIDFunction::WmDesksPrivateGetDeskByIDFunction() =
+    default;
+WmDesksPrivateGetDeskByIDFunction::~WmDesksPrivateGetDeskByIDFunction() =
+    default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateGetDeskByIDFunction::Run() {
+  auto params = api::wm_desks_private::GetDeskByID::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_uuid);
+  if (!uuid.is_valid()) {
+    return RespondNow(Error(kInvalidIdError));
+  }
+  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
+  desk_impl->GetDeskByID(
+      uuid,
+      base::BindOnce(&WmDesksPrivateGetDeskByIDFunction::OnGetDeskByID, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void WmDesksPrivateGetDeskByIDFunction::OnGetDeskByID(
+    std::string error_string,
+    api::wm_desks_private::Desk desk) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  Respond(
+      ArgumentList(api::wm_desks_private::GetDeskByID::Results::Create(desk)));
 }
 
 }  // namespace extensions

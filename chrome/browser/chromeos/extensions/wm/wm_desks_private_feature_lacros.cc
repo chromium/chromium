@@ -335,4 +335,29 @@ void WMDesksPrivateFeatureLacros::SwitchDesk(const base::GUID& desk_uuid,
           std::move(callback)));
 }
 
+void WMDesksPrivateFeatureLacros::GetDeskByID(const base::GUID& desk_uuid,
+                                              GetDeskByIDCallback callback) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::Desk>() ||
+      service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
+                               kGetDeskByIDMinVersion)) {
+    std::move(callback).Run(kCROS_API_UNAVAILABLE, {});
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Desk>()->GetDeskByID(
+      desk_uuid, base::BindOnce(
+                     [](GetDeskByIDCallback callback,
+                        crosapi::mojom::GetDeskByIDResultPtr result) {
+                       if (result->is_error()) {
+                         std::move(callback).Run(
+                             GetStringError(result->get_error()), {});
+                         return;
+                       }
+                       std::move(callback).Run(
+                           {}, GetDeskFromCrosApiDesk(result->get_desk()));
+                     },
+                     std::move(callback)));
+}
+
 }  // namespace extensions

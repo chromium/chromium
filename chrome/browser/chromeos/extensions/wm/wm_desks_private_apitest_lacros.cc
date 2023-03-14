@@ -235,6 +235,55 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToCurrentDeskTest) {
   EXPECT_EQ(desk_id->GetString(), desk_id_1->GetString());
 }
 
+// Tests retrieve desk with deskID.
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByIDTest) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+
+  if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
+      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
+                               kGetDeskByIDMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Get desk Id of active desk.
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>().get(),
+          "[]", browser());
+
+  // Retrieve desk by Id.
+  auto get_desk_by_id_function =
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
+  auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      get_desk_by_id_function.get(), R"([")" + desk_id->GetString() + R"("])",
+      browser());
+  EXPECT_TRUE(result->is_dict());
+  auto* desk_id_1 = result->GetDict().Find("deskUuid");
+  auto* desk_name = result->GetDict().Find("deskName");
+  ASSERT_TRUE(desk_id_1->is_string());
+  EXPECT_EQ(desk_id->GetString(), desk_id_1->GetString());
+  EXPECT_TRUE(desk_name->is_string());
+}
+
+// Tests retrieve desk with invalid deskID.
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByInvalidIDTest) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+
+  if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
+      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
+                               kGetDeskByIDMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  auto get_desk_by_id_function =
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
+  auto error = extension_function_test_utils::RunFunctionAndReturnError(
+      get_desk_by_id_function.get(), R"(["invalid-id"])", browser());
+  EXPECT_EQ(error, "InvalidIdError");
+}
+
 // TODO(b/254500921): Find a way to create new MRU window in ash-chrome and
 // test save&recall in lacros.
 

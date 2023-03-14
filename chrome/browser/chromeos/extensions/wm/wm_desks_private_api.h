@@ -230,6 +230,27 @@ class WmDesksPrivateSwitchDeskFunction : public ExtensionFunction {
   void OnSwitchDesk(std::string error_string);
 };
 
+class WmDesksPrivateGetDeskByIDFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateGetDeskByIDFunction();
+  WmDesksPrivateGetDeskByIDFunction(const WmDesksPrivateGetDeskByIDFunction&) =
+      delete;
+  WmDesksPrivateGetDeskByIDFunction& operator=(
+      const WmDesksPrivateGetDeskByIDFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.getDeskByID",
+                             WMDESKSPRIVATE_GETDESKBYID)
+
+ protected:
+  ~WmDesksPrivateGetDeskByIDFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnGetDeskByID(std::string error_string,
+                     api::wm_desks_private::Desk desk);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WM_WM_DESKS_PRIVATE_API_H_

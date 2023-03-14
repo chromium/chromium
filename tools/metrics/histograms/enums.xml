@@ -36189,6 +36189,7 @@ Called by update_extension_histograms.py.-->
   <int value="1767" label="FILEMANAGERPRIVATE_TOGGLEBULKPINNING"/>
   <int value="1768" label="SMARTCARDPROVIDERPRIVATE_REPORTCONNECTRESULT"/>
   <int value="1769" label="SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT"/>
+  <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
 </enum>
 
 <enum name="ExtensionIconState">

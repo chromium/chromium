@@ -184,6 +184,10 @@ class DesksClient : public ash::SessionObserver {
   // Returns the UUID of active desk.
   base::GUID GetActiveDesk();
 
+  // Retrieves desk by its UUID.
+  virtual base::expected<const ash::Desk*, DesksClient::DeskActionError>
+  GetDeskByID(const base::GUID& desk_uuid) const;
+
   // Switches to the target desk, returns error string if operation fails.
   absl::optional<DesksClient::DeskActionError> SwitchDesk(
       const base::GUID& desk_uuid);

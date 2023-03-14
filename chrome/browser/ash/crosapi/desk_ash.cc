@@ -283,7 +283,20 @@ void DeskAsh::SwitchDesk(const base::GUID& desk_id,
   std::move(callback).Run(crosapi::mojom::SwitchDeskResult::NewSucceeded(true));
 }
 
-// Performs a depth-first search for a window with given App Restore Window Id.
+void DeskAsh::GetDeskByID(const base::GUID& uuid,
+                          GetDeskByIDCallback callback) {
+  auto result = DesksClient::Get()->GetDeskByID(uuid);
+  if (!result.has_value()) {
+    std::move(callback).Run(crosapi::mojom::GetDeskByIDResult::NewError(
+        ToCrosApiError(result.error())));
+    return;
+  }
+  std::move(callback).Run(
+      crosapi::mojom::GetDeskByIDResult::NewDesk(ToDeskModel(result.value())));
+}
+
+// Performs a depth-first search for a window with given App Restore Window
+// Id.
 aura::Window* DeskAsh::GetWindowByAppRestoreWindowId(
     aura::Window* window,
     int32_t app_restore_window_id) {

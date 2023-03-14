@@ -51,6 +51,8 @@ class WMDesksPrivateFeatureAsh : public WMDesksPrivateFeature {
 
   void SwitchDesk(const base::GUID& desk_uuid,
                   SwitchDeskCallback callback) override;
+  void GetDeskByID(const base::GUID& desk_uuid,
+                   GetDeskByIDCallback callback) override;
 };
 
 }  // namespace extensions

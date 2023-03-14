@@ -2827,6 +2827,24 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
   EXPECT_EQ(desk_uuid_, desk_uuid);
 }
 
+// Tests retrieve an existing desk.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByValidDeskId) {
+  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+  auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->uuid(), desk_uuid);
+}
+
+// Tests retrieve an non-exist desk should return error.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByInvalidDeskId) {
+  auto result = DesksClient::Get()->GetDeskByID(base::GUID::GenerateRandomV4());
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            DesksClient::DeskActionError::kResourceNotFoundError);
+}
+
 // Tests that floating workspace template can be captured with fixed uuid.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureFloatingWorkspaceTemplateTest) {
   // Create a new browser and add a few tabs to it.

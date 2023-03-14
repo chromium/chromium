@@ -92,6 +92,12 @@ class WMDesksPrivateFeature {
   // Switches to the target desk.
   virtual void SwitchDesk(const base::GUID& desk_uuid,
                           SwitchDeskCallback callback) = 0;
+
+  using GetDeskByIDCallback =
+      base::OnceCallback<void(std::string, api::wm_desks_private::Desk desk)>;
+  // Retrieves the desk information by desk ID.
+  virtual void GetDeskByID(const base::GUID& desk_uuid,
+                           GetDeskByIDCallback callback) = 0;
 };
 
 }  // namespace extensions

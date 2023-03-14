@@ -60,6 +60,7 @@ namespace wmDesksPrivate {
   callback GetAllDesksCallback = void (Desk[] desks);
   callback GetSavedDesksCallback = void (SavedDesk[] saveDesks);
   callback SaveActiveDeskCallback = void (SavedDesk desk);
+  callback GetDeskByIDCallback = void (Desk desk);
 
   interface Functions {
     // Returns all available previously-saved desks.
@@ -118,5 +119,9 @@ namespace wmDesksPrivate {
     // Switches to the target desk.
     [supportsPromises] static void switchDesk(
         DOMString deskUuid, VoidCallback callback);
+
+    // Retrieves desk by the desk UUID.
+    [supportsPromises] static void getDeskByID(
+        DOMString deskUuid, GetDeskByIDCallback callback);
   };
 };
