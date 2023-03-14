@@ -16,6 +16,9 @@ namespace {
 id<PartialTranslateControllerFactory> g_partial_translate_controller_factory;
 }
 
+namespace ios {
+namespace provider {
+
 id<PartialTranslateController> NewPartialTranslateController(
     NSString* source_text,
     const CGRect& anchor,
@@ -30,7 +33,29 @@ NSUInteger PartialTranslateLimitMaxCharacters() {
   return [g_partial_translate_controller_factory maximumCharacterLimit];
 }
 
+namespace test {
 void SetPartialTranslateControllerFactory(
     id<PartialTranslateControllerFactory> factory) {
   g_partial_translate_controller_factory = factory;
+}
+}  // namespace test
+
+}  // namespace provider
+}  // namespace ios
+
+id<PartialTranslateController> NewPartialTranslateController(
+    NSString* source_text,
+    const CGRect& anchor,
+    BOOL incognito) {
+  return ios::provider::NewPartialTranslateController(source_text, anchor,
+                                                      incognito);
+}
+
+NSUInteger PartialTranslateLimitMaxCharacters() {
+  return ios::provider::PartialTranslateLimitMaxCharacters();
+}
+
+void SetPartialTranslateControllerFactory(
+    id<PartialTranslateControllerFactory> factory) {
+  ios::provider::test::SetPartialTranslateControllerFactory(factory);
 }

@@ -19,8 +19,19 @@
 
 @end
 
+namespace ios {
+namespace provider {
+namespace test {
+
 // Sets the global factory for the tests.
 // Resets it if `factory` is nil.
+void SetPartialTranslateControllerFactory(
+    id<PartialTranslateControllerFactory> factory);
+
+}  // namespace test
+}  // namespace provider
+}  // namespace ios
+
 void SetPartialTranslateControllerFactory(
     id<PartialTranslateControllerFactory> factory);
 
