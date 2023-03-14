@@ -331,6 +331,13 @@ std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest() {
                                     2 * kOneMegabyte, JSONTest::NON_CRITICAL);
 }
 
+std::unique_ptr<DiagnosticsTest> MakeAccountBookmarksTest() {
+  base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
+  path = path.Append(bookmarks::kAccountBookmarksFileName);
+  return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
+                                    2 * kOneMegabyte, JSONTest::NON_CRITICAL);
+}
+
 std::unique_ptr<DiagnosticsTest> MakeLocalStateTest() {
   base::FilePath path;
   base::PathService::Get(chrome::DIR_USER_DATA, &path);

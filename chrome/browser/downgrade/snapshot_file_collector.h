@@ -37,7 +37,8 @@ enum class SnapshotItemId {
   kProfileIcon = 18,
   kLastVersion = 19,
   kSessions = 20,
-  kMaxValue = kSessions
+  kAccountBookmarks = 21,
+  kMaxValue = kAccountBookmarks
 };
 
 struct SnapshotItemDetails {

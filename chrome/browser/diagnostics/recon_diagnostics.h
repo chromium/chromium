@@ -46,6 +46,7 @@ enum OutcomeCodes {
 };
 
 std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest();
+std::unique_ptr<DiagnosticsTest> MakeAccountBookmarksTest();
 std::unique_ptr<DiagnosticsTest> MakeDictonaryDirTest();
 std::unique_ptr<DiagnosticsTest> MakeDiskSpaceTest();
 std::unique_ptr<DiagnosticsTest> MakeInstallTypeTest();
