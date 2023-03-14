@@ -200,7 +200,10 @@ component("bluetooth") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/services/nearby/public/cpp/",
+    ]
   }
 
   if (is_apple) {

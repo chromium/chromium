@@ -72,6 +72,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/devicetype.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using device::BluetoothAdapter;
@@ -961,17 +962,19 @@ void BluetoothAdapterBlueZ::DevicePropertyChanged(
     NotifyGattServicesDiscovered(device_bluez);
   }
 
-  // When a device becomes paired, mark it as trusted so that the user does
-  // not need to approve every incoming connection
   if (property_name == properties->paired.name()) {
-    if (properties->paired.value() && !properties->trusted.value()) {
-      device_bluez->SetTrusted();
-    }
     NotifyDevicePairedChanged(device_bluez, properties->paired.value());
   }
 
+// For CrOS, when a device becomes bonded, mark it as trusted so that the
+// user does not need to approve every incoming connection
+// This is not for other OS because,for non-CrOS, Chrome is not part of the OS.
+// Leave the decision to the real OS
 #if BUILDFLAG(IS_CHROMEOS)
   if (property_name == properties->bonded.name()) {
+    if (properties->bonded.value() && !properties->trusted.value()) {
+      device_bluez->SetTrusted();
+    }
     NotifyDeviceBondedChanged(device_bluez, properties->bonded.value());
   }
 #endif
@@ -1152,14 +1155,25 @@ void BluetoothAdapterBlueZ::AuthorizeService(
     return;
   }
 
-  // We always set paired devices to Trusted, so the only reason that this
-  // method call would ever be called is in the case of a race condition where
-  // our "Set('Trusted', true)" method call is still pending in the Bluetooth
-  // daemon because it's busy handling the incoming connection.
-  if (device_bluez->IsPaired()) {
+  // For CrOS, we always set trusted when a device becomes bonded, so the only
+  // reason that this method call would ever be called is in the case of a
+  // race condition where our "Set('Trusted', true)" method call is still
+  // pending in the Bluetooth daemon because it's busy handling the incoming
+  // connection.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (device_bluez->IsBonded()) {
     std::move(callback).Run(SUCCESS);
     return;
   }
+#endif
+
+  // Allow nearby connection from unbonded devices.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::nearby::IsNearbyClientUuid(BluetoothUUID(uuid))) {
+    std::move(callback).Run(SUCCESS);
+    return;
+  }
+#endif
 
   // TODO(keybuk): reject service authorizations when not paired, determine
   // whether this is acceptable long-term.
