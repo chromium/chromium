@@ -54,7 +54,7 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
 
   base::Value::Dict trigger_form_logs;
   if (FormStructure* form = manager->FindCachedFormById(form_global_id)) {
-    trigger_form_logs.Set("trigger_form_signature", form->FormSignatureAsStr());
+    trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 
     if (params.field_renderer_id) {
       FieldGlobalId field_global_id = {
@@ -64,7 +64,7 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
             return field->global_id() == field_global_id;
           });
       if (field != form->end()) {
-        trigger_form_logs.Set("trigger_field_signature",
+        trigger_form_logs.Set("triggerFieldSignature",
                               (*field)->FieldSignatureAsStr());
       }
     }

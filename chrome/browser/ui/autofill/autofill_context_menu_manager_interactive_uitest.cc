@@ -223,9 +223,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   std::string expected_metadata;
   base::Value::Dict extra_logs;
   auto form_structure = std::make_unique<FormStructure>(form);
-  extra_logs.Set("trigger_form_signature",
-                 form_structure->FormSignatureAsStr());
-  extra_logs.Set("trigger_field_signature",
+  extra_logs.Set("triggerFormSignature", form_structure->FormSignatureAsStr());
+  extra_logs.Set("triggerFieldSignature",
                  form_structure->field(0)->FieldSignatureAsStr());
   base::JSONWriter::Write(data_logs::FetchAutofillFeedbackData(
                               GetAutofillManager(), std::move(extra_logs)),

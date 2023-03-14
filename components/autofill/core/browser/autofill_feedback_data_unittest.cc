@@ -21,65 +21,65 @@ namespace autofill {
 namespace {
 
 const char kExpectedFeedbackDataJSON[] = R"({
-   "form_structures": [ {
-      "form_signature": "4232380759432074174",
-      "host_frame": "00000000000000000000000000000000",
-      "id_attribute": "",
-      "main_frame_url": "https://myform_root.com",
-      "name_attribute": "",
-      "renderer_id": "11",
-      "source_url": "https://myform.com",
+   "formStructures": [ {
+      "formSignature": "4232380759432074174",
+      "hostFrame": "00000000000000000000000000000000",
+      "idAttribute": "",
+      "mainFrameUrl": "https://myform_root.com",
+      "nameAttribute": "",
+      "rendererId": "11",
+      "sourceUrl": "https://myform.com",
       "fields": [ {
-         "autocomplete_attribute": "cc-given-name",
-         "field_signature": "3879476562",
-         "field_type": "HTML_TYPE_CREDIT_CARD_NAME_FIRST",
-         "heuristic_type": "CREDIT_CARD_NAME_FIRST",
-         "host_form_signature": "0",
-         "html_type": "HTML_TYPE_CREDIT_CARD_NAME_FIRST",
-         "id_attribute": "",
-         "is_empty": true,
-         "is_focusable": true,
-         "is_visible": true,
-         "label_attribute": "First Name on Card",
-         "parseable_name_attribute": "",
-         "placeholder_attribute": "",
+         "autocompleteAttribute": "cc-given-name",
+         "fieldSignature": "3879476562",
+         "fieldType": "HTML_TYPE_CREDIT_CARD_NAME_FIRST",
+         "heuristicType": "CREDIT_CARD_NAME_FIRST",
+         "hostFormSignature": "0",
+         "htmlType": "HTML_TYPE_CREDIT_CARD_NAME_FIRST",
+         "idAttribute": "",
+         "isEmpty": true,
+         "isFocusable": true,
+         "isVisible": true,
+         "labelAttribute": "First Name on Card",
+         "parseableNameAttribute": "",
+         "placeholderAttribute": "",
          "section": "firstnameoncard_0_11",
-         "server_type": "NO_SERVER_DATA",
-         "server_type_is_override": false
+         "serverType": "NO_SERVER_DATA",
+         "serverTypeIsOverride": false
       }, {
-         "autocomplete_attribute": "cc-family-name",
-         "field_signature": "3213606822",
-         "field_type": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
-         "heuristic_type": "CREDIT_CARD_NAME_LAST",
-         "host_form_signature": "0",
-         "html_type": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
-         "id_attribute": "",
-         "is_empty": true,
-         "is_focusable": true,
-         "is_visible": true,
-         "label_attribute": "Last Name on Card",
-         "parseable_name_attribute": "",
-         "placeholder_attribute": "",
+         "autocompleteAttribute": "cc-family-name",
+         "fieldSignature": "3213606822",
+         "fieldType": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
+         "heuristicType": "CREDIT_CARD_NAME_LAST",
+         "hostFormSignature": "0",
+         "htmlType": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
+         "idAttribute": "",
+         "isEmpty": true,
+         "isFocusable": true,
+         "isVisible": true,
+         "labelAttribute": "Last Name on Card",
+         "parseableNameAttribute": "",
+         "placeholderAttribute": "",
          "section": "firstnameoncard_0_11",
-         "server_type": "NO_SERVER_DATA",
-         "server_type_is_override": false
+         "serverType": "NO_SERVER_DATA",
+         "serverTypeIsOverride": false
       }, {
-         "autocomplete_attribute": "cc-family-name",
-         "field_signature": "1029417091",
-         "field_type": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
-         "heuristic_type": "EMAIL_ADDRESS",
-         "host_form_signature": "0",
-         "html_type": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
-         "id_attribute": "",
-         "is_empty": true,
-         "is_focusable": true,
-         "is_visible": true,
-         "label_attribute": "Email",
-         "parseable_name_attribute": "",
-         "placeholder_attribute": "",
+         "autocompleteAttribute": "cc-family-name",
+         "fieldSignature": "1029417091",
+         "fieldType": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
+         "heuristicType": "EMAIL_ADDRESS",
+         "hostFormSignature": "0",
+         "htmlType": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
+         "idAttribute": "",
+         "isEmpty": true,
+         "isFocusable": true,
+         "isVisible": true,
+         "labelAttribute": "Email",
+         "parseableNameAttribute": "",
+         "placeholderAttribute": "",
          "section": "firstnameoncard_0_11",
-         "server_type": "NO_SERVER_DATA",
-         "server_type_is_override": false
+         "serverType": "NO_SERVER_DATA",
+         "serverTypeIsOverride": false
       } ]
    } ]
 })";
@@ -164,9 +164,9 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
   // Update the expected data with a last_autofill_event entry.
   base::Value::Dict last_autofill_event;
-  last_autofill_event.Set("associated_country", "");
+  last_autofill_event.Set("associatedCountry", "");
   last_autofill_event.Set("type", "SingleFieldFormFillerIban");
-  expected_data->GetDict().Set("last_autofill_event",
+  expected_data->GetDict().Set("lastAutofillEvent",
                                std::move(last_autofill_event));
 
   EXPECT_EQ(
@@ -211,8 +211,8 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
       /*removed_forms=*/{});
 
   base::Value::Dict extra_logs;
-  extra_logs.Set("trigger_form_signature", "123");
-  extra_logs.Set("trigger_field_signature", "456");
+  extra_logs.Set("triggerFormSignature", "123");
+  extra_logs.Set("triggerFieldSignature", "456");
 
   base::Value::Dict autofill_feedback_data =
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get(),
