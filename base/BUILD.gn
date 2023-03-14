@@ -2205,6 +2205,8 @@ component("base") {
       ]
     } else {
       sources -= [
+        "allocator/dispatcher/dispatcher.cc",
+        "allocator/dispatcher/dispatcher.h",
         "sampling_heap_profiler/poisson_allocation_sampler.cc",
         "sampling_heap_profiler/poisson_allocation_sampler.h",
         "sampling_heap_profiler/sampling_heap_profiler.cc",
@@ -3048,7 +3050,6 @@ source_set("arm_bti_testfunctions") {
 
 test("base_unittests") {
   sources = [
-    "allocator/dispatcher/dispatcher_unittest.cc",
     "allocator/dispatcher/initializer_unittest.cc",
     "allocator/dispatcher/internal/dispatcher_internal_unittest.cc",
     "allocator/dispatcher/testing/dispatcher_test.cc",
@@ -3411,6 +3412,10 @@ test("base_unittests") {
     "version_unittest.cc",
     "vlog_unittest.cc",
   ]
+
+  if (use_allocator_shim) {
+    sources += [ "allocator/dispatcher/dispatcher_unittest.cc" ]
+  }
 
   if (use_custom_libcxx && enable_safe_libcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
