@@ -102,10 +102,8 @@ template("trichrome_library_apk_tmpl") {
     # bundle smoke tests.
     never_incremental = true
 
-    uncompress_dex = true
     version_name = chrome_version_name
     version_code = _version_code
-
     min_sdk_version = 29
 
     # TODO(torne): using icon_resources just to get a temporary icon

@@ -2864,7 +2864,6 @@ if (current_toolchain == default_toolchain) {
   if (enable_arcore) {
     monochrome_test_apk_tmpl("monochrome_public_test_ar_apk") {
       apk_name = "MonochromePublicTestAr"
-      min_sdk_version = 24
       target_sdk_version = android_sdk_version
 
       if (android_64bit_target_cpu) {
@@ -3138,11 +3137,9 @@ if (current_toolchain == default_toolchain) {
 
     if (_is_trichrome) {
       _bundle_name = "TrichromeChrome${invoker.bundle_suffix}"
-      _min_sdk_version = 29
       _module_descs = trichrome_module_descs
     } else {
       _bundle_name = "MonochromePublic${invoker.bundle_suffix}"
-      _min_sdk_version = 24
       _module_descs = monochrome_module_descs
     }
 
@@ -3191,7 +3188,6 @@ if (current_toolchain == default_toolchain) {
       base_module_target = ":$_base_module_target_name"
       bundle_name = _bundle_name
       manifest_package = chrome_public_manifest_package
-      min_sdk_version = _min_sdk_version
       module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
       if (!_is_trichrome) {

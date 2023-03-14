@@ -77,7 +77,6 @@ template("monochrome_test_apk_tmpl") {
                              "include_64_bit_webview",
                              "include_32_bit_webview",
                              "loadable_modules",
-                             "min_sdk_version",
                              "proguard_configs",
                              "secondary_abi_loadable_modules",
                              "target_sdk_version",
