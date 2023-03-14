@@ -310,7 +310,8 @@ void PillButton::Init() {
   const int height = GetButtonHeight(type_);
 
   if (rounded_highlight_path_) {
-    if ((type_ & kButtonColorVariant) == kPrimary) {
+    if (chromeos::features::IsJellyrollEnabled() ||
+        (type_ & kButtonColorVariant) == kPrimary) {
       views::InstallRoundRectHighlightPathGenerator(
           this, gfx::Insets(-kFocusRingPadding),
           height / 2.f + kFocusRingPadding);
