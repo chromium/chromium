@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
       syncer::SEND_TAB_TO_SELF, syncer::SECURITY_EVENTS,
       syncer::WIFI_CONFIGURATIONS, syncer::OS_PREFERENCES,
       syncer::OS_PRIORITY_PREFERENCES, syncer::SHARING_MESSAGE,
-      syncer::WORKSPACE_DESK, syncer::PROXY_TABS, syncer::NIGORI);
+      syncer::WORKSPACE_DESK, syncer::PROXY_TABS, syncer::NIGORI,
+      syncer::CONTACT_INFO);
   if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
     expected_active_types.Put(syncer::HISTORY);
   } else {

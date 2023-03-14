@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
@@ -75,6 +76,19 @@ class TwoClientWalletSyncTest : public SyncTest {
 
  private:
   autofill::TestAutofillClock test_clock_;
+};
+
+// AutofillAccountProfilesUnionView deprecates support for server profiles.
+// TODO(crbug.com/1348294): Remove when launched.
+class TwoClientWalletServerAddressSyncTest : public TwoClientWalletSyncTest {
+ public:
+  TwoClientWalletServerAddressSyncTest() {
+    features_.InitAndDisableFeature(
+        autofill::features::kAutofillAccountProfilesUnionView);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
@@ -198,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kEvenLaterTime, credit_cards[0]->use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateServerAddressMetadata) {
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
+                       UpdateServerAddressMetadata) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
@@ -231,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateServerAddressMetadata) {
   EXPECT_EQ(kLaterTime, server_addresses[0]->use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
                        UpdateServerAddressMetadataWhileNotSyncing) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
@@ -271,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(kLaterTime, server_addresses[0]->use_date());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
                        UpdateServerAddressMetadataConflictsWhileNotSyncing) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
@@ -462,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Flaky. http://crbug.com/917498
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
                        ServerAddressConvertsToSameLocalAddress) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
@@ -494,7 +509,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_TRUE(local_address_0.EqualsForSyncPurposes(*local_addresses_1[0]));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+// TODO(crbug.com/1348294): This test doesn't actually depend on the
+// SERVER_PROFILE -> LOCAL_ADDRESS conversion (which is deprecated by
+// AutofillAccountProfilesUnionView). However, since `SetupSyncAndInitialize()`
+// waits for the conversion to complete, this test is also using the fixture
+// `TwoClientWalletServerAddressSyncTest`. Once AutofillAccountProfilesUnionView
+// has launched, SERVER_PROFILEs will be removed and the test can be simplified.
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
                        DeleteServerCardMetadataWhenDataGetsRemoved) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
@@ -545,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
   EXPECT_EQ(1U, GetServerAddressesMetadata(1).size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientWalletServerAddressSyncTest,
                        DeleteServerAddressMetadataWhenDataGetsRemoved) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
