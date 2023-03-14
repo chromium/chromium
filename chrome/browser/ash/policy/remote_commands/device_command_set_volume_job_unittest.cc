@@ -67,6 +67,8 @@ class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
     observation_.Observe(&handler);
   }
 
+  void Shutdown() { observation_.Reset(); }
+
   // `ash::CrasAudioHandler::AudioObserver` implementation:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override {
     waiter_.SetValue();
@@ -96,6 +98,7 @@ class DeviceCommandSetVolumeTest : public ChromeAshTestBase {
 
   // testing::Test
   void SetUp() override;
+  void TearDown() override;
 
   void RunJob(RemoteCommandJob& job) {
     base::test::TestFuture<void> job_finished_future;
@@ -120,6 +123,14 @@ void DeviceCommandSetVolumeTest::SetUp() {
   ash::FakeCrasAudioClient::Get()->send_volume_change_events_asynchronous();
 
   audio_observer_.Initialize(*ash::CrasAudioHandler::Get());
+}
+
+void DeviceCommandSetVolumeTest::TearDown() {
+  // The TearDown() call below may destroy the CrasAudioHandler being observed,
+  // so stop observing it before that happens.
+  audio_observer_.Shutdown();
+
+  ChromeAshTestBase::TearDown();
 }
 
 void VerifyResults(const RemoteCommandJob& job,
