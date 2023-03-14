@@ -4100,18 +4100,6 @@
       ]
     },
     {
-      "id": 405,
-      "description": "Disable EGL_EXT_image_dma_buf_import_modifiers for Exo KMS modifier discovery on old proprietary Mali drivers",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_renderer": "Mali.*",
-      "gl_version_string": ".*r26p0-01rel0.*",
-      "features": [
-        "disable_egl_ext_image_dma_buf_import_modifiers"
-      ]
-    },
-    {
       "id": 406,
       "description": "VP9 decoder rejects submitted bitstream buffer on some old Intel drivers.",
       "cr_bugs": [1376513],

@@ -16,7 +16,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_version_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -280,7 +280,7 @@ void PopulateNumericCapabilities(Capabilities* caps,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info) {
   DCHECK(caps != nullptr);

@@ -79,7 +79,7 @@ void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
 void PopulateNumericCapabilities(Capabilities* caps,
                                  const FeatureInfo* feature_info);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info);
 #endif
