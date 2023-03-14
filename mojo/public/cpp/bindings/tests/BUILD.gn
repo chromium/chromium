@@ -70,6 +70,7 @@ source_set("tests") {
     ":test_mojom__generate_message_ids",
     ":test_mojom_cpp_only",
     "//base/test:test_support",
+    "//build:blink_buildflags",
     "//mojo/core/test:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

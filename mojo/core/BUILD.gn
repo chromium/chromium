@@ -366,6 +366,7 @@ source_set("test_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
     "//mojo:buildflags",
     "//mojo/core:embedder_internal",
     "//mojo/core/embedder",
