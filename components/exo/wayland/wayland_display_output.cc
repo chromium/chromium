@@ -36,15 +36,16 @@ void DoDelete(WaylandDisplayOutput* output, int retry_count) {
               WaylandDisplayOutput::kDeleteTaskDelay)) {
         return;
       } else {
-        DLOG(WARNING) << "Failed to post delayed deletion task for "
-                         "WaylandDisplayOutput with display id="
-                      << output->id()
-                      << " and remaining retry count: " << retry_count;
+        LOG(WARNING) << "Failed to post delayed deletion task for "
+                        "WaylandDisplayOutput with display id="
+                     << output->id()
+                     << " and remaining retry count: " << retry_count;
       }
     } else {
-      DLOG(WARNING)
+      LOG(WARNING)
           << "Timed out waiting for clients to unbind registered output for id="
-          << output->id();
+          << output->id()
+          << " with remaining bound outputs=" << output->output_counts();
     }
   }
   // TODO(crbug.com/1420468): For flakes debugging.
@@ -83,9 +84,9 @@ void WaylandDisplayOutput::OnDisplayRemoved() {
           FROM_HERE, base::BindOnce(&DoDelete, this, kDeleteRetries),
           kDeleteTaskDelay)) {
     // If we can't schedule the delete task, just delete now to not leak memory.
-    DLOG(WARNING) << "Failed to post initial delayed deletion task for "
-                     "WaylandDisplayOutput with display id="
-                  << id();
+    LOG(WARNING) << "Failed to post initial delayed deletion task for "
+                    "WaylandDisplayOutput with display id="
+                 << id();
     delete this;
   }
 }
