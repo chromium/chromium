@@ -322,12 +322,6 @@ void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info);
 
-// Produces a Heavy Ad Issue based on the parameters passed in.
-std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
-    RenderFrameHostImpl* frame,
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason);
-
 void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
