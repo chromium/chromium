@@ -118,7 +118,7 @@
     &lt;li&gt;Обратитесь к владельцу сайта.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Вы ввели пароль на сайте, которым не управляет ваша организация. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
-<translation id="1257553931232494454">Масштабирование</translation>
+<translation id="1257553931232494454">масштабирование</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы задать настройки Chrome.</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1264309058268477500">Другой</translation>
@@ -378,7 +378,7 @@
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1813414402673211292">Очистка истории</translation>
-<translation id="182139138257690338">Автоматическое скачивание</translation>
+<translation id="182139138257690338">автоматическое скачивание</translation>
 <translation id="1821930232296380041">Недопустимый запрос или неверные параметры запроса</translation>
 <translation id="1822540298136254167">Сайты, которые вы посещали, и время пребывания на них</translation>
 <translation id="1824402189105105503">Восьмой рулон</translation>
@@ -972,7 +972,7 @@
 <translation id="3383566085871012386">Текущий порядок приоритетности</translation>
 <translation id="3387261909427947069">Способы оплаты</translation>
 <translation id="3391030046425686457">Адрес доставки</translation>
-<translation id="3391482648489541560">Редактирование файлов</translation>
+<translation id="3391482648489541560">редактирование файлов</translation>
 <translation id="3392028486601120379">Задан путь для шаблона URL "<ph name="URL_PATTERN" />". Пути для этого ключа не поддерживаются. Удалите путь и попробуйте снова. Например, вместо *://example.com/ введите *://example.com.</translation>
 <translation id="3395827396354264108">Способ выдачи</translation>
 <translation id="3399952811970034796">Адрес доставки</translation>
@@ -1348,7 +1348,7 @@
 <translation id="4304049446746819918">{0,plural, =1{Администратор не рекомендует перемещать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует перемещать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="4305666528087210886">Не удалось получить доступ к файлу</translation>
 <translation id="4306529830550717874">Сохранить адрес?</translation>
-<translation id="4306812610847412719">Буфер обмена</translation>
+<translation id="4306812610847412719">буфер обмена</translation>
 <translation id="4308567447483056043">Это правило игнорируется, так как пользователь не связан с организацией. Чтобы оно применялось, одна организация должна управлять браузером и профилем Chrome через консоль администратора.</translation>
 <translation id="4310070645992025887">Поиск по теме</translation>
 <translation id="4310496734563057511">Если устройством пользуется кто-то ещё, включите Windows Hello, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
@@ -1423,7 +1423,7 @@
 <translation id="4492519888999857993">Эти функции отключены по умолчанию. В новых версиях Chrome они станут недоступны.</translation>
 <translation id="4493480324863638523">Недопустимый URL. Укажите URL в стандартном виде, например http://example.com или https://example.com.</translation>
 <translation id="4494323206460475851">В настройках вы можете посмотреть темы рекламы и заблокировать те из них, которыми вы не хотите делиться с сайтами. Также Chrome автоматически удаляет темы, которые добавлены более четырех недель назад.</translation>
-<translation id="4500587658229086076">Небезопасный контент</translation>
+<translation id="4500587658229086076">небезопасный контент</translation>
 <translation id="4506176782989081258">Ошибка проверки: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Обратитесь за помощью к системному администратору.</translation>
 <translation id="450710068430902550">Доступ администратора</translation>
@@ -2215,7 +2215,7 @@
 <translation id="6457206614190510200">Скрепление внакидку</translation>
 <translation id="6457455098507772300">Оповещения о скидках будут появляться на рабочем столе</translation>
 <translation id="6458606150257356946">Все равно вставить</translation>
-<translation id="6464094930452079790">Изображения</translation>
+<translation id="6464094930452079790">изображения</translation>
 <translation id="6465306955648956876">Управление паролями…</translation>
 <translation id="646793340882508547">Приключенческие игры</translation>
 <translation id="6468485451923838994">Шрифты</translation>
@@ -2225,7 +2225,7 @@
 <translation id="6486200200930923183">Документальные фильмы</translation>
 <translation id="6489534406876378309">Начать загрузку сведений об ошибках</translation>
 <translation id="6493924760403974580">Приложение доступно только в этом размере</translation>
-<translation id="6494750904506170417">Всплывающие окна и переадресация</translation>
+<translation id="6494750904506170417">всплывающие окна и переадресация</translation>
 <translation id="6497295192259406877">Коммерческая деятельность</translation>
 <translation id="6499038740797743453">Сбросить пароль?</translation>
 <translation id="6502626736864595182">Поставщики форумов и чатов</translation>
@@ -2309,7 +2309,7 @@
 <translation id="6718612893943028815">Использовать камеру?</translation>
 <translation id="6721678857435001674">Просмотр производителя и модели Электронного ключа</translation>
 <translation id="6727094998759448074">SRA4</translation>
-<translation id="6732087373923685049">Камера</translation>
+<translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6744009308914054259">В ожидании подключения вы можете открыть скачанные файлы и почитать статьи офлайн.</translation>
@@ -2335,7 +2335,7 @@
 <translation id="681021252041861472">Обязательное поле</translation>
 <translation id="6810899417690483278">Идентификатор персонализации</translation>
 <translation id="6817217109584391709">JavaScript</translation>
-<translation id="6820143000046097424">Последовательные порты</translation>
+<translation id="6820143000046097424">последовательные порты</translation>
 <translation id="6820686453637990663">Код CVC</translation>
 <translation id="6821175457349035766">Приключения и боевики</translation>
 <translation id="6822437859461265552">Страхование жизни</translation>
@@ -2533,7 +2533,7 @@
 <translation id="7304030187361489308">Высокий</translation>
 <translation id="7304562222803846232">Управление настройками конфиденциальности аккаунта Google</translation>
 <translation id="7305756307268530424">Запустить медленнее</translation>
-<translation id="7308436126008021607">Фоновая синхронизация</translation>
+<translation id="7308436126008021607">фоновая синхронизация</translation>
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -2967,7 +2967,7 @@
 <translation id="8288807391153049143">Показать сертификат</translation>
 <translation id="8289355894181816810">Уточните информацию у администратора сети.</translation>
 <translation id="8293206222192510085">Добавление закладки</translation>
-<translation id="829335040383910391">Звук</translation>
+<translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8296205692406981542">Парки и скверы</translation>
 <translation id="8297545700510100061">Файлы cookie и другие данные сайтов используются, чтобы хранить информацию о вас, в том числе для входа в систему и персонализации рекламы. Для управления файлами cookie перейдите в <ph name="SETTINGS" />.</translation>
@@ -2977,7 +2977,7 @@
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="8307888238279532626">установленные приложения и частоту их использования.</translation>
 <translation id="831997045666694187">До вечера</translation>
-<translation id="8321476692217554900">Уведомления</translation>
+<translation id="8321476692217554900">уведомления</translation>
 <translation id="8329068931308448247">Конверт 14</translation>
 <translation id="8332188693563227489">Доступ к <ph name="HOST_NAME" /> запрещен</translation>
 <translation id="833262891116910667">Выделить</translation>
@@ -3005,7 +3005,7 @@
 <translation id="8398790343843005537">Найти телефон</translation>
 <translation id="8405579342203358118">Указать данные для синхронизации в настройках Chrome</translation>
 <translation id="8406071103346257942">прекратить использовать блокировку экрана для ввода паролей</translation>
-<translation id="8409413588194360210">Обработчики платежей</translation>
+<translation id="8409413588194360210">обработчики платежей</translation>
 <translation id="8412145213513410671">Сбои (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Необходимо дважды ввести одну и ту же кодовую фразу.</translation>
 <translation id="8416694386774425977">Импорт невозможен: недопустимая конфигурация сети.
@@ -3087,7 +3087,7 @@
 <translation id="8637577059508742477">Вашим профилем и браузером управляет <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Конверт Kaku 3</translation>
 <translation id="8647287295490773273">210 x 330 мм</translation>
-<translation id="865032292777205197">Датчики движения</translation>
+<translation id="865032292777205197">датчики движения</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="8666678546361132282">Английский</translation>
@@ -3146,7 +3146,7 @@
 <translation id="8785658048882205566">Мотоциклы</translation>
 <translation id="8790007591277257123">&amp;Повторить удаление</translation>
 <translation id="8792621596287649091">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>
-<translation id="8792626944327216835">Микрофон</translation>
+<translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685">Домен <ph name="ENROLLMENT_DOMAIN" /> включил в браузере коннекторы Chrome Enterprise Connectors. У них есть доступ к некоторым вашим данным.</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8798739476508189189">Ищете экспериментальные параметры браузера? Перейти</translation>
@@ -3353,7 +3353,7 @@
 <translation id="987264212798334818">Общие</translation>
 <translation id="988159990683914416">Сборка для разработчиков</translation>
 <translation id="989988560359834682">Изменение адреса</translation>
-<translation id="991413375315957741">Датчики движения и освещенности</translation>
+<translation id="991413375315957741">датчики движения и освещенности</translation>
 <translation id="992110854164447044">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Розовый</translation>

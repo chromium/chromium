@@ -343,7 +343,7 @@
 <translation id="1307559529304613120">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
 <translation id="131112695174432497">広告のパーソナライズに影響するデータは削除されます</translation>
 <translation id="1312811472299082263">Ansible Playbook または Crostini のバックアップ ファイルから作成する</translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> を削除しました</translation>
+<translation id="1313264149528821971"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" />を削除しました</translation>
 <translation id="1313405956111467313">自動プロキシ設定</translation>
 <translation id="131364520783682672">CapsLock</translation>
 <translation id="1313660246522271310">タブで表示中のサイトも含め、すべてのサイトからログアウトします</translation>
@@ -1125,7 +1125,7 @@
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2003130567827682533">「<ph name="NAME" />」データサービスを有効にするには、まず Wi-Fi ネットワークに接続してください</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
-<translation id="2005199804247617997">他のプロフィール</translation>
+<translation id="2005199804247617997">他のプロファイル</translation>
 <translation id="2005967212456643969">拡張機能ごとに権限をカスタマイズする</translation>
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
@@ -4819,7 +4819,7 @@
 <translation id="5376169624176189338">クリックすると前に戻ります。押したまま待つと履歴が表示されます。</translation>
 <translation id="5376931455988532197">ファイル サイズが大きすぎます</translation>
 <translation id="5379140238605961210">マイクへのアクセスを引き続きブロックする</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" /> を削除しました</translation>
+<translation id="5380424552031517043"><ph name="PERMISSION" />を削除しました</translation>
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5383377866517186886">Mac のシステム環境設定でカメラがオフになっています</translation>
 <translation id="5383740867328871413">名前のないグループ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -5500,7 +5500,7 @@
 <translation id="6003143259071779217">eSIM モバイル ネットワークの削除</translation>
 <translation id="6003479444341796444">タイトルバーが表示されました</translation>
 <translation id="6003582434972667631">テーマは組織によって設定されています</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /> を削除しました</translation>
+<translation id="6006392003290068688"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を削除しました</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
 <translation id="6010651352520077187">Google 翻訳をオンにすると、指定した言語でサイトを翻訳するかを確認するメッセージが表示されます。また、サイトを自動的に翻訳することもできます。</translation>
@@ -8721,7 +8721,7 @@
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="89667524227025535">デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
-<translation id="8966809848145604011">他のプロフィール</translation>
+<translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8966870118594285808">間違って閉じたタブをもう一度開きます</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8968527460726243404">ChromeOS システム イメージ ライター</translation>

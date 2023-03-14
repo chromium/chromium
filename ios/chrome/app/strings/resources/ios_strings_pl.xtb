@@ -650,7 +650,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5857770089550859117">Wpisz hasło, by rozpocząć synchronizację.</translation>
 <translation id="5859715514067755465">Dalej</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
-<translation id="5869029295770560994">Rozumiem</translation>
+<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">Przeniosłeś 1 element</translation>
 <translation id="5896576662943111387">Stworzona dla iOS</translation>
 <translation id="5897956970858271241">Otwórz skopiowany link</translation>
@@ -1040,7 +1040,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8706588385081740091">Hasła</translation>
-<translation id="8712637175834984815">Rozumiem</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
 <translation id="8721297211384281569">Menu Narzędzia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
