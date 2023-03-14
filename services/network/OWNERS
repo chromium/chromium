@@ -2,7 +2,12 @@
 # in Network Service, please consider sharing the design idea/doc with
 # network-service-dev@chromium.org beforehand.
 
+# Primary
 bashi@chromium.org
+horo@chromium.org
+ricea@chromium.org
+
+# Secondary
 cduvall@chromium.org
 ericorth@chromium.org
 jam@chromium.org
