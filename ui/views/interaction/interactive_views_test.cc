@@ -315,20 +315,4 @@ InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
   });
 }
 
-InteractiveViewsTest::InteractiveViewsTest(
-    std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : ViewsTestBase(std::move(task_environment)) {}
-
-InteractiveViewsTest::~InteractiveViewsTest() = default;
-
-void InteractiveViewsTest::SetUp() {
-  ViewsTestBase::SetUp();
-  private_test_impl().DoTestSetUp();
-}
-
-void InteractiveViewsTest::TearDown() {
-  private_test_impl().DoTestTearDown();
-  ViewsTestBase::TearDown();
-}
-
 }  // namespace views::test

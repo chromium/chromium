@@ -609,50 +609,23 @@ Most Kombucha tests will derive directly from either `InteractiveViewsTest` or
 `InteractiveBrowserTest`.
 
 If your test needs to derive from a different/custom test fixture class but you
-would still like access to the Kombucha API, you can have your fixture inherit
-directly from one of the *TestApi classes above. (This happens most commonly
-when you are adding Kombucha tests to a large library of existing feature
-tests.)
-
-You will then need to insert the following calls:
-- In `SetUp()` (or `SetUpOnMainThread()` for browser tests), you will need to
-  call `private_test_impl().DoTestSetUp()`.
-- In `TearDown()` (or `TearDownOnMainThread()` for browser tests), you will
-  need to call `private_test_impl().DoTestTearDown()`.
-
-For tests deriving from `InteractiveViewsTestApi` or any of its subclasses, you
-will also need to call `SetContextWidget()` sometime before you call
-`RunTestSequence()`.
-
-See the implementations of any of the convenience test fixtures listed in
-[Getting Started](#getting-started) for examples.
-
-Failure to do the above may cause your test to malfunction, or some test verbs
-not to work.
+would still like access to the Kombucha API, use `InteractiveViewsTestT<T>` or
+`InteractiveBrowserTestT<T>` instead.
 
 Example:
-
 ```cpp
-class MyTestFixture
-    : public MyCustomBrowserTest,  // descends from InProcessBrowserTest
-      public InteractiveBrowserTestApi {
- public:
-  void SetUpOnMainThread() override {
-    MyCustomTestBase::SetUpOnMainThread();
-    private_test_impl().DoTestSetUp();
-    // It's safest to do this here; you can still call
-    // RunTestSequenceInContext() if you need a different context (e.g. an
-    // incognito browser window).
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
-  }
+// Want Kombucha functionality, but already have an existing test
+// `MyCustomBrowserTest` with logic we need.
+using MyTestFixture = InteractiveBrowserTestT<MyCustomBrowserTest>;
 
-  void TearDownOnMainThread() override {
-    // Optional, but polite:
-    SetContextWidget(nullptr);
-    private_test_impl().DoTestTearDown();
-    MyCustomTestBase::TearDownOnMainThread();
-  }
+// Here's another way to do the same thing, if we want to further extend the
+// test class.
+class MyTestFixture2 : public InteractiveBrowserTestT<MyCustomBrowserTest> {
+ public:
+  MyTestFixture2();
+  ~MyTestFixture2() override;
+
+  // Add anything else we need here.
 };
 ```
 

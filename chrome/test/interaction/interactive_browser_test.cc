@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
@@ -506,24 +505,4 @@ Browser* InteractiveBrowserTestApi::GetBrowserFor(
       absl::get<std::reference_wrapper<Browser*>>(spec).get();
   CHECK(browser_ptr) << "BrowserSpecifier: Browser* is null.";
   return browser_ptr;
-}
-
-InteractiveBrowserTest::InteractiveBrowserTest() = default;
-
-InteractiveBrowserTest::InteractiveBrowserTest(
-    std::unique_ptr<views::ViewsDelegate> views_delegate)
-    : InProcessBrowserTest(std::move(views_delegate)) {}
-
-InteractiveBrowserTest::~InteractiveBrowserTest() = default;
-
-void InteractiveBrowserTest::SetUpOnMainThread() {
-  InProcessBrowserTest::SetUpOnMainThread();
-  private_test_impl().DoTestSetUp();
-  SetContextWidget(
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
-}
-
-void InteractiveBrowserTest::TearDownOnMainThread() {
-  private_test_impl().DoTestTearDown();
-  InProcessBrowserTest::TearDownOnMainThread();
 }

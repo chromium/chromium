@@ -36,12 +36,9 @@ namespace ui::test {
 // convenience API is nicknamed "Kombucha" (see
 // //chrome/test/interaction/README.md for more information).
 //
-// This class is not a test fixture; your test fixture can inherit from it to
-// import all of the test API it provides. You will need to call
-// private_test_impl().DoTestSetUp() in your SetUp() method and
-// private_test_impl().DoTestTearDown() in your TearDown() method; for this
-// reason, we provide a convenience class, InteractiveTest, below, which is pre-
-// configured to handle all of this for you.
+// This class is not a test fixture; it is a mixin that can be added to an
+// existing test fixture using `InteractiveTestT<T>` - or just use
+// `InteractiveTest`, which *is* a test fixture.
 //
 // Also, since this class does not implement input automation for any particular
 // framework, you are more likely to want e.g. InteractiveViewsTest[Api] or
@@ -415,21 +412,39 @@ class InteractiveTestApi {
   std::unique_ptr<internal::InteractiveTestPrivate> private_test_impl_;
 };
 
+// Template that adds InteractiveTestApi to any test fixture. No simulators are
+// attached to test_util() so if you want to use verbs like PressButton() you
+// will need to install your own simulator.
+template <typename T>
+class InteractiveTestT : public T, public InteractiveTestApi {
+ public:
+  template <typename... Args>
+  explicit InteractiveTestT(Args&&... args)
+      : T(std::forward<Args>(args)...),
+        InteractiveTestApi(std::make_unique<internal::InteractiveTestPrivate>(
+            std::make_unique<InteractionTestUtil>())) {}
+
+  ~InteractiveTestT() override = default;
+
+ protected:
+  void SetUp() override {
+    T::SetUp();
+    private_test_impl().DoTestSetUp();
+  }
+
+  void TearDown() override {
+    private_test_impl().DoTestTearDown();
+    T::TearDown();
+  }
+};
+
 // A simple test fixture that brings in all of the features of
 // InteractiveTestApi. No simulators are attached to test_util() so if you want
 // to use verbs like PressButton() you will need to install your own simulator.
 //
 // Provided for convenience, but generally you will want InteractiveViewsTest
-// instead.
-class InteractiveTest : public testing::Test, public InteractiveTestApi {
- public:
-  InteractiveTest();
-  ~InteractiveTest() override;
-
- protected:
-  void SetUp() override;
-  void TearDown() override;
-};
+// or InteractiveBrowserTest instead.
+using InteractiveTest = InteractiveTestT<testing::Test>;
 
 // Template definitions:
 

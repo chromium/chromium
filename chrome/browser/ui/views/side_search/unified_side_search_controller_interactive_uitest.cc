@@ -874,8 +874,7 @@ class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
 };
 
 class SideSearchIPHAndTutorialBrowserTest
-    : public SideSearchFeatureEngagementTest,
-      public InteractiveBrowserTestApi {
+    : public InteractiveBrowserTestT<SideSearchFeatureEngagementTest> {
  public:
   SideSearchIPHAndTutorialBrowserTest() {
     feature_list_.InitAndEnableFeaturesWithParameters({
@@ -886,19 +885,7 @@ class SideSearchIPHAndTutorialBrowserTest
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    SideSearchFeatureEngagementTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    SideSearchFeatureEngagementTest::SetUpOnMainThread();
-    private_test_impl().DoTestSetUp();
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
-  }
-
-  void TearDownOnMainThread() override {
-    private_test_impl().DoTestTearDown();
-    SideSearchFeatureEngagementTest::TearDownOnMainThread();
+    InteractiveBrowserTestT::SetUp();
   }
 
   bool CurrentBubbleAnchoredToCorrectElement(

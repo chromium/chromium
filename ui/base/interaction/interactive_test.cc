@@ -367,20 +367,4 @@ void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
     dest.emplace_back(std::move(step));
 }
 
-InteractiveTest::InteractiveTest()
-    : InteractiveTestApi(std::make_unique<internal::InteractiveTestPrivate>(
-          std::make_unique<InteractionTestUtil>())) {}
-
-InteractiveTest::~InteractiveTest() = default;
-
-void InteractiveTest::SetUp() {
-  Test::SetUp();
-  private_test_impl().DoTestSetUp();
-}
-
-void InteractiveTest::TearDown() {
-  private_test_impl().DoTestTearDown();
-  Test::TearDown();
-}
-
 }  // namespace ui::test

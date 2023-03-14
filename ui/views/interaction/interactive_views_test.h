@@ -39,13 +39,9 @@ namespace views::test {
 // convenience API is nicknamed "Kombucha" (see
 // //chrome/test/interaction/README.md for more information).
 //
-// This class is not a test fixture; your test fixture can inherit from it to
-// import all of the test API it provides. You will need to call
-// private_test_impl().DoTestSetUp() in your SetUp() method and
-// private_test_impl().DoTestTearDown() in your TearDown() method and you must
-// call SetContextWidget() before running your test sequence. For this reason,
-// we provide a convenience class, InteractiveViewsTest, below, which is
-// pre-configured to handle all of this for you.
+// This class is not a test fixture; it is a mixin that can be added to existing
+// test classes using `InteractiveViewsTestT<T>` - or just use
+// `InteractiveViewsTest`, which *is* a test fixture (preferred; see below).
 //
 // To use Kombucha for in-process browser tests, instead see:
 // //chrome/test/interaction/interactive_browser_test.h
@@ -351,31 +347,43 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   base::raw_ptr<Widget, DanglingUntriaged> context_widget_ = nullptr;
 };
 
-// Test fixture for Views tests that supports the InteractiveViewsTestApi
-// convenience methods.
+// Template that adds InteractiveViewsTestApi to any test fixture. Prefer to use
+// InteractiveViewsTest unless you specifically need to inherit from another
+// test class.
 //
 // You must call SetContextWidget() before using RunTestSequence() or any of the
 // mouse actions.
 //
 // See //chrome/test/interaction/README.md for usage.
-class InteractiveViewsTest : public ViewsTestBase,
-                             public InteractiveViewsTestApi {
+template <typename T>
+class InteractiveViewsTestT : public T, public InteractiveViewsTestApi {
  public:
-  // Constructs a ViewsTestBase with |traits| being forwarded to its
-  // TaskEnvironment. MainThreadType always defaults to UI and must not be
-  // specified.
-  template <typename... TaskEnvironmentTraits>
-  NOINLINE explicit InteractiveViewsTest(TaskEnvironmentTraits&&... traits)
-      : ViewsTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+  template <typename... Args>
+  explicit InteractiveViewsTestT(Args&&... args)
+      : T(std::forward<Args>(args)...) {}
 
-  explicit InteractiveViewsTest(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment);
+  ~InteractiveViewsTestT() override = default;
 
-  ~InteractiveViewsTest() override;
+ protected:
+  void SetUp() override {
+    T::SetUp();
+    private_test_impl().DoTestSetUp();
+  }
 
-  void SetUp() override;
-  void TearDown() override;
+  void TearDown() override {
+    private_test_impl().DoTestTearDown();
+    T::TearDown();
+  }
 };
+
+// Convenience test fixture for Views tests that supports
+// InteractiveViewsTestApi.
+//
+// You must call SetContextWidget() before using RunTestSequence() or any of the
+// mouse actions.
+//
+// See //chrome/test/interaction/README.md for usage.
+using InteractiveViewsTest = InteractiveViewsTestT<ViewsTestBase>;
 
 // Template definitions:
 
