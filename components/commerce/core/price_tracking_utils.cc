@@ -52,6 +52,11 @@ void UpdateBookmarksForSubscriptionsResult(
       if (!specifics || specifics->product_cluster_id() != cluster_id)
         continue;
 
+      // TODO(b:273526228): Once crrev.com/c/4278641 reaches stable, remove this
+      //                    call -- shopping specifics no longer tracks
+      //                    subscription state.
+      specifics->set_is_price_tracked(enabled);
+
       // Always use the Windows epoch to keep consistency. This also align with
       // how we set the time fields in the bookmark_specifics.proto and in the
       // subscriptions_manager.cc.
