@@ -177,7 +177,10 @@ BOOL IsMultilineSearchSuggestionEnabled() {
     if (self.contentView.subviews.count == 0) {
       [self setupLayout];
     }
-    if (self.suggestion.isAppendable || self.suggestion.isTabMatch) {
+    BOOL suggestionNeedsTrailingButton =
+        self.suggestion.isAppendable || self.suggestion.isTabMatch;
+
+    if (suggestionNeedsTrailingButton && !self.trailingButton.superview) {
       [self setupTrailingButtonLayout];
     }
     [self attachToLayoutGuides];
@@ -518,8 +521,6 @@ BOOL IsMultilineSearchSuggestionEnabled() {
     self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;
     self.textTruncatingLabel.numberOfLines = 1;
   }
-  [self updateTextConstraints:IsMultilineSearchSuggestionEnabled() &&
-                              suggestion.isWrapping];
 
   // URLs have have special layout requirements.
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
@@ -541,6 +542,8 @@ BOOL IsMultilineSearchSuggestionEnabled() {
   if (suggestion.isAppendable || suggestion.isTabMatch) {
     [self setupTrailingButton];
   }
+  [self updateTextConstraints:IsMultilineSearchSuggestionEnabled() &&
+                              suggestion.isWrapping];
 
   self.leadingIconView.highlighted = self.highlighted;
   self.trailingButton.tintColor =
@@ -550,7 +553,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
 /// Setup the trailing button. This includes both setting up the button's layout
 /// and popuplating it with the correct image and color.
 - (void)setupTrailingButton {
-  if (self.window) {
+  if (self.window && !self.trailingButton.superview) {
     [self setupTrailingButtonLayout];
   }
   // Show append button for search history/search suggestions or
