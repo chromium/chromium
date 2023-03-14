@@ -1125,9 +1125,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, NoUpdate) {
       ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK));
 }
 
-// TODO(crbug.com/1396103): enable the test after fixing the implementation of
-// `ExpectLegacyUpdate3WebSucceeds`.
-TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_DisabledPolicyManual) {
+TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
   base::Value::Dict group_policies;
   group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
@@ -1135,9 +1133,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_DisabledPolicyManual) {
       kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
 }
 
-// TODO(crbug.com/1396103): enable the test after fixing the implementation of
-// `ExpectLegacyUpdate3WebSucceeds`.
-TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_DisabledPolicy) {
+TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
   base::Value::Dict group_policies;
   group_policies.Set("Updatetest1", kPolicyDisabled);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
@@ -1153,8 +1149,10 @@ TEST_F(IntegrationTestLegacyUpdate3Web, CheckForUpdate) {
       ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_UPDATE_AVAILABLE, S_OK));
 }
 
-// TODO(crbug.com/1396103): fix after implementing `CheckForUpdate`.
-TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_Update) {
+TEST_F(IntegrationTestLegacyUpdate3Web, Update) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.2")));
