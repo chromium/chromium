@@ -54,7 +54,7 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
        */
       isHotspotToggleOn_: {
         type: Boolean,
-        observer: 'onHotspotToggleChanged_',
+        value: false,
       },
     };
   }
@@ -100,25 +100,6 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     return '';
   }
 
-  /**
-   * Observer for isHotspotToggleOn_ that returns early until the previous
-   * value was not undefined to avoid wrongly toggling the HotspotInfo state.
-   */
-  private onHotspotToggleChanged_(
-      newValue: boolean, oldValue: boolean|undefined): void {
-    if (oldValue === undefined) {
-      return;
-    }
-    // If the toggle value changed but the toggle is disabled, the change came
-    // from CrosHotspotConfig, not the user. Don't attempt to turn the hotspot
-    // on or off.
-    if (this.isToggleDisabled_()) {
-      return;
-    }
-
-    this.setHotspotEnabledState_(newValue);
-  }
-
   private setHotspotEnabledState_(enabled: boolean): void {
     if (enabled) {
       getHotspotConfig().enableHotspot();
@@ -155,7 +136,8 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     return this.getIndicatorTypeForSource(OncSource.kDevicePolicy);
   }
 
-  private announceHotspotToggleChange_(): void {
+  private onHotspotToggleChange_(): void {
+    this.setHotspotEnabledState_(this.isHotspotToggleOn_);
     getAnnouncerInstance().announce(
         this.isHotspotToggleOn_ ? this.i18n('hotspotEnabledA11yLabel') :
                                   this.i18n('hotspotDisabledA11yLabel'));
