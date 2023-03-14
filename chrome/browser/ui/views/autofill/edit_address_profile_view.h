@@ -46,9 +46,11 @@ class EditAddressProfileView : public AutofillBubbleBase,
  private:
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
+  void UpdateActionButtonState(bool is_valid);
 
   raw_ptr<EditAddressProfileDialogController> controller_;
   raw_ptr<AddressEditorView> address_editor_view_ = nullptr;
+  base::CallbackListSubscription on_is_valid_change_subscription_;
 };
 
 }  // namespace autofill

@@ -45,6 +45,7 @@ class EditAddressProfileDialogControllerImpl
   std::u16string GetWindowTitle() const override;
   std::u16string GetOkButtonLabel() const override;
   const AutofillProfile& GetProfileToEdit() const override;
+  bool GetIsValidatable() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       const AutofillProfile& profile_with_edits) override;

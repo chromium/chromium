@@ -7067,6 +7067,7 @@ test("unit_tests") {
       "../browser/ui/user_education/active_tab_tracker_unittest.cc",
       "../browser/ui/user_education/reopen_tab_in_product_help_trigger_unittest.cc",
       "../browser/ui/user_education/reopen_tab_in_product_help_unittest.cc",
+      "../browser/ui/views/autofill/address_editor_view_unittest.cc",
       "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",

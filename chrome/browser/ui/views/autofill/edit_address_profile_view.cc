@@ -52,9 +52,20 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
+  auto address_editor_controller = std::make_unique<AddressEditorController>(
+      controller_->GetProfileToEdit(), web_contents,
+      controller_->GetIsValidatable());
+
+  // Storing subscription (which gets canceled in the destructor) in a property
+  // secures using of Unretained(this).
+  on_is_valid_change_subscription_ =
+      address_editor_controller->AddIsValidChangedCallback(
+          base::BindRepeating(&EditAddressProfileView::UpdateActionButtonState,
+                              base::Unretained(this)));
+  UpdateActionButtonState(address_editor_controller->get_is_valid());
+
   address_editor_view_ = AddChildView(std::make_unique<AddressEditorView>(
-      std::make_unique<AddressEditorController>(controller_->GetProfileToEdit(),
-                                                web_contents)));
+      std::move(address_editor_controller)));
 }
 
 void EditAddressProfileView::Hide() {
@@ -84,6 +95,10 @@ void EditAddressProfileView::OnUserDecision(
     return;
   controller_->OnUserDecision(decision,
                               address_editor_view_->GetAddressProfile());
+}
+
+void EditAddressProfileView::UpdateActionButtonState(bool is_valid) {
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, is_valid);
 }
 
 }  // namespace autofill

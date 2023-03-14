@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,6 +69,14 @@ std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
 const AutofillProfile&
 EditAddressProfileDialogControllerImpl::GetProfileToEdit() const {
   return address_profile_to_edit_;
+}
+
+bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
+  // Only account profiles should be validated, i.e. the ones already stored
+  // in account (the source property) and those that are currently migrating.
+  return address_profile_to_edit_.source() ==
+             AutofillProfile::Source::kAccount ||
+         is_migration_;
 }
 
 void EditAddressProfileDialogControllerImpl::OnUserDecision(

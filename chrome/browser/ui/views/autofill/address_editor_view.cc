@@ -4,18 +4,26 @@
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
+#include <cstddef>
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/ui/country_combobox_model.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -33,6 +41,7 @@ AddressEditorView::AddressEditorView(
     std::unique_ptr<AddressEditorController> controller)
     : controller_(std::move(controller)) {
   CreateEditorView();
+  Validate();
 }
 
 AddressEditorView::~AddressEditorView() = default;
@@ -47,6 +56,20 @@ const autofill::AutofillProfile& AddressEditorView::GetAddressProfile() {
   return controller_->GetAddressProfile();
 }
 
+void AddressEditorView::SetCountryCodeForTesting(const std::string& code) {
+  views::Combobox* combobox = static_cast<views::Combobox*>(
+      GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
+  auto* model = static_cast<CountryComboboxModel*>(combobox->GetModel());
+  for (const auto& country : model->countries()) {
+    if (country && country->country_code() == code) {
+      combobox->SelectValue(country->name());
+      OnPerformAction(combobox);
+      UpdateEditorView();
+      return;
+    }
+  }
+}
+
 void AddressEditorView::SetTextInputFieldValueForTesting(
     autofill::ServerFieldType type,
     const std::u16string& value) {
@@ -55,8 +78,13 @@ void AddressEditorView::SetTextInputFieldValueForTesting(
   text_field->SetText(value);
 }
 
+std::u16string AddressEditorView::GetValidationErrorForTesting() const {
+  return validation_error_ ? validation_error_->GetText() : u"";
+}
+
 void AddressEditorView::CreateEditorView() {
   text_fields_.clear();
+  field_change_callbacks_.clear();
 
   const int kBetweenChildSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -68,6 +96,15 @@ void AddressEditorView::CreateEditorView() {
 
   for (const auto& field : controller_->editor_fields()) {
     CreateInputField(field);
+  }
+
+  if (controller_->get_is_validatable()) {
+    validation_error_ =
+        AddChildView(views::Builder<views::Label>()
+                         .SetMultiLine(true)
+                         .SetEnabledColorId(ui::kColorAlertHighSeverity)
+                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                         .Build());
   }
 }
 
@@ -118,6 +155,9 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
 
       // Using autofill field type as a view ID (for testing).
       text_field->SetID(GetInputFieldViewId(field.type));
+      field_change_callbacks_.push_back(
+          text_field->AddTextChangedCallback(base::BindRepeating(
+              &AddressEditorView::Validate, base::Unretained(this))));
       text_fields_.insert(std::make_pair(text_field.get(), field));
 
       field.length_hint == EditorField::LengthHint::HINT_SHORT
@@ -166,6 +206,7 @@ void AddressEditorView::UpdateEditorView() {
   RemoveAllChildViews();
   CreateEditorView();
   PreferredSizeChanged();
+  Validate();
 
   if (controller_->chosen_country_index() > 0UL &&
       controller_->chosen_country_index() < controller_->GetCountriesSize()) {
@@ -216,6 +257,32 @@ void AddressEditorView::OnDataChanged() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AddressEditorView::UpdateEditorView,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AddressEditorView::Validate() {
+  if (!controller_->get_is_validatable()) {
+    return;
+  }
+
+  int number_of_invalid_fields = 0;
+  for (const auto& field : text_fields_) {
+    bool is_field_invalid =
+        !controller_->IsValid(field.second, field.first->GetText());
+    field.first->SetInvalid(is_field_invalid);
+    number_of_invalid_fields += is_field_invalid;
+  }
+
+  controller_->SetIsValid(number_of_invalid_fields == 0);
+
+  std::u16string validation_error;
+  if (number_of_invalid_fields == 1) {
+    validation_error = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR);
+  } else if (number_of_invalid_fields > 1) {
+    validation_error = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR);
+  }
+  validation_error_->SetText(validation_error);
 }
 
 BEGIN_METADATA(AddressEditorView, views::View)

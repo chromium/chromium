@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -35,10 +37,12 @@ struct EditorField {
   EditorField(autofill::ServerFieldType type,
               std::u16string label,
               LengthHint length_hint,
+              bool is_required,
               ControlType control_type = ControlType::TEXTFIELD)
       : type(type),
         label(std::move(label)),
         length_hint(length_hint),
+        is_required(is_required),
         control_type(control_type) {}
 
   // Data type in the field.
@@ -47,14 +51,19 @@ struct EditorField {
   std::u16string label;
   // Hint about the length of this field's contents.
   LengthHint length_hint;
+  // Whether this field should be validated against the "is required" rule.
+  bool is_required;
   // The control type.
   ControlType control_type;
 };
 
 class AddressEditorController {
  public:
+  using OnIsValidChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
+
   AddressEditorController(const autofill::AutofillProfile& profile_to_edit,
-                          content::WebContents* web_contents);
+                          content::WebContents* web_contents,
+                          bool is_validatable);
   ~AddressEditorController();
 
   const std::vector<EditorField>& editor_fields() { return editor_fields_; }
@@ -62,6 +71,12 @@ class AddressEditorController {
   void set_chosen_country_index(size_t chosen_country_index) {
     chosen_country_index_ = chosen_country_index;
   }
+
+  bool get_is_validatable() const { return is_validatable_; }
+
+  bool get_is_valid() const { return is_valid_; }
+
+  void SetIsValid(bool is_valid);
 
   size_t GetCountriesSize();
 
@@ -76,6 +91,11 @@ class AddressEditorController {
   std::u16string GetProfileInfo(autofill::ServerFieldType type);
 
   const autofill::AutofillProfile& GetAddressProfile();
+
+  [[nodiscard]] base::CallbackListSubscription AddIsValidChangedCallback(
+      OnIsValidChangeCallbackList::CallbackType callback);
+
+  bool IsValid(const EditorField& field, const std::u16string& value);
 
  private:
   // Updates |countries_| with the content of |model| if it's not null,
@@ -108,6 +128,14 @@ class AddressEditorController {
   const std::string locale_;
 
   std::vector<EditorField> editor_fields_;
+
+  // Whether the editor should perform validation.
+  bool is_validatable_ = false;
+
+  bool is_valid_ = true;
+
+  // List of external callbacks subscribed to validity updates.
+  OnIsValidChangeCallbackList on_is_valid_change_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_

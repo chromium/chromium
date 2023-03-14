@@ -30,7 +30,8 @@ class EditAddressProfileDialogControllerImplTest : public DialogBrowserTest {
     DCHECK(controller);
     controller->OfferEdit(
         test::GetFullProfile(), /*original_profile=*/nullptr,
-        /*address_profile_save_prompt_callback=*/base::DoNothing(), false);
+        /*address_profile_save_prompt_callback=*/base::DoNothing(),
+        /*is_migration=*/false);
   }
 };
 

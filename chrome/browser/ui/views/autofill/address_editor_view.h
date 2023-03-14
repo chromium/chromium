@@ -17,6 +17,7 @@ namespace views {
 class Combobox;
 class Textfield;
 class View;
+class Label;
 }  // namespace views
 
 class AddressEditorController;
@@ -39,8 +40,10 @@ class AddressEditorView : public views::View {
   // returns it.
   const autofill::AutofillProfile& GetAddressProfile();
 
+  void SetCountryCodeForTesting(const std::string& code);
   void SetTextInputFieldValueForTesting(autofill::ServerFieldType type,
                                         const std::u16string& value);
+  std::u16string GetValidationErrorForTesting() const;
 
  private:
   // Creates the whole editor view to go within the editor dialog. It
@@ -72,10 +75,18 @@ class AddressEditorView : public views::View {
   // synchronously.
   void OnDataChanged();
 
+  // Checks all fields and updates their visual status accordingly.
+  void Validate();
+
   std::unique_ptr<AddressEditorController> controller_;
+
   // Map from TextField to the object that describes it
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
+  views::Label* validation_error_ = nullptr;
+
+  // 1 subscription to text changes per field.
+  std::vector<base::CallbackListSubscription> field_change_callbacks_;
 
   base::WeakPtrFactory<AddressEditorView> weak_ptr_factory_{this};
 };
