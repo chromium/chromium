@@ -353,11 +353,6 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   display: none;
 }
 
-/* TODO(b/236800499): Handle pause for time-lapse recording */
-body.record-type-time-lapse #pause-recordvideo {
-  display: none;
-}
-
 #video-snapshot-holder {
   bottom: calc(var(--shutter-vertical-center) + 84px);
   transform: translate(50%, 50%);
@@ -505,7 +500,7 @@ body.video.taking #recordvideo {
   background: transparent;
 }
 
-body:is(:not(.video), .record-type-gif, .record-type-time-lapse) #toggle-mic,
+body:is(:not(.video), .record-type-gif) #toggle-mic,
 body:not(.multi-camera) #switch-device {
   visibility: hidden;
 }
