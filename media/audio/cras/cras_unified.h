@@ -18,11 +18,11 @@
 
 #include "base/compiler_specific.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
-
-class AudioManagerCrasBase;
 
 // Implementation of AudioOuputStream for Chrome OS using the Chrome OS audio
 // server.
@@ -35,7 +35,8 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   // audio manager who is creating this object.
   CrasUnifiedStream(const AudioParameters& params,
                     AudioManagerCrasBase* manager,
-                    const std::string& device_id);
+                    const std::string& device_id,
+                    const AudioManager::LogCallback& log_callback);
 
   CrasUnifiedStream(const CrasUnifiedStream&) = delete;
   CrasUnifiedStream& operator=(const CrasUnifiedStream&) = delete;
@@ -71,35 +72,65 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   // Deals with an error that occured in the stream.  Called from StreamError().
   void NotifyStreamError(int err);
 
+  // There is 3 main reasons for output audio glitches.
+  // 1. Client is too slow to reply and audio data is not delivered to the
+  //    buffer on time.
+  // 2. Audio thread woke up late.
+  // 3. Issues with the driver
+  // All 3 issues result in there not being enough valid playback data and zero
+  // frames are filled to avoid playing noise. The duration of the zero frames
+  // filled are all calculated using |underrun_duration|.
+  void CalculateAudioGlitches(base::TimeDelta underrun_duration);
+
+  // Called from the dtor and when the stream is reset.
+  void ReportAndResetStats();
+
   // The client used to communicate with the audio server.
-  struct libcras_client* client_;
+  struct libcras_client* client_ = NULL;
 
   // ID of the playing stream.
-  cras_stream_id_t stream_id_;
+  cras_stream_id_t stream_id_ = 0;
 
   // PCM parameters for the stream.
   AudioParameters params_;
 
   // True if stream is playing.
-  bool is_playing_;
+  bool is_playing_ = 0;
 
   // Volume level from 0.0 to 1.0.
-  float volume_;
+  float volume_ = 1.0;
 
   // Audio manager that created us.  Used to report that we've been closed.
-  AudioManagerCrasBase* manager_;
+  AudioManagerCrasBase* const manager_;
 
   // Callback to get audio samples.
-  AudioSourceCallback* source_callback_;
+  AudioSourceCallback* source_callback_ = NULL;
 
   // Container for exchanging data with AudioSourceCallback::OnMoreData().
-  std::unique_ptr<AudioBus> output_bus_;
+  const std::unique_ptr<AudioBus> output_bus_;
 
   // Direciton of the stream.
-  CRAS_STREAM_DIRECTION stream_direction_;
+  const CRAS_STREAM_DIRECTION stream_direction_ = CRAS_STREAM_OUTPUT;
 
   // Index of the CRAS device to stream output to.
   const int pin_device_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
+
+  // Callback to send statistics info.
+  const AudioManager::LogCallback log_callback_;
+
+  // Contains the duration of the underrun frames passed in from the previous
+  // callback.
+  // Underrun occurs when the there isn't enough valid playback data. When this
+  // happens, zero frames have to be filled in. The duration of the underrun is
+  // the duration of the zero frames filled in.
+  base::TimeDelta last_underrun_duration_;
+
+  // Used to accumulate glitch info to report to |source_callback_|
+  AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 };
 
 }  // namespace media

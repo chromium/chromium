@@ -76,7 +76,8 @@ class CrasUnifiedStreamTest : public testing::Test {
     AudioParameters params(kTestFormat, layout, kTestSampleRate,
                            samples_per_packet);
     return new CrasUnifiedStream(params, mock_manager_.get(),
-                                 AudioDeviceDescription::kDefaultDeviceId);
+                                 AudioDeviceDescription::kDefaultDeviceId,
+                                 AudioManager::LogCallback());
   }
 
   MockAudioManagerCras& mock_manager() { return *(mock_manager_.get()); }
@@ -120,7 +121,8 @@ TEST_F(CrasUnifiedStreamTest, ConstructedState) {
       kTestFormat, ChannelLayoutConfig::FromLayout<kTestChannelLayout>(), 0,
       kTestFramesPerPacket);
   test_stream = new CrasUnifiedStream(bad_rate_params, mock_manager_.get(),
-                                      AudioDeviceDescription::kDefaultDeviceId);
+                                      AudioDeviceDescription::kDefaultDeviceId,
+                                      AudioManager::LogCallback());
   EXPECT_FALSE(test_stream->Open());
   test_stream->Close();
 }

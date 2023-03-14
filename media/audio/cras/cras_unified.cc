@@ -4,12 +4,16 @@
 
 #include "media/audio/cras/cras_unified.h"
 
+#include <inttypes.h>
+
 #include <algorithm>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/base/audio_timestamp_helper.h"
 
 namespace media {
 
@@ -100,19 +104,17 @@ int GetDevicePin(AudioManagerCrasBase* manager, const std::string& device_id) {
 // before the hardware buffer underruns and fills the buffer with another block
 // of audio.
 
-CrasUnifiedStream::CrasUnifiedStream(const AudioParameters& params,
-                                     AudioManagerCrasBase* manager,
-                                     const std::string& device_id)
-    : client_(NULL),
-      stream_id_(0),
-      params_(params),
-      is_playing_(false),
-      volume_(1.0),
+CrasUnifiedStream::CrasUnifiedStream(
+    const AudioParameters& params,
+    AudioManagerCrasBase* manager,
+    const std::string& device_id,
+    const AudioManager::LogCallback& log_callback)
+    : params_(params),
       manager_(manager),
-      source_callback_(NULL),
       output_bus_(AudioBus::Create(params)),
-      stream_direction_(CRAS_STREAM_OUTPUT),
-      pin_device_(GetDevicePin(manager, device_id)) {
+      pin_device_(GetDevicePin(manager, device_id)),
+      glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
+      log_callback_(std::move(log_callback)) {
   DCHECK(manager_);
   DCHECK_GT(params_.channels(), 0);
 }
@@ -203,6 +205,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   }
 
   unsigned int frames_per_packet = params_.frames_per_buffer();
+
   int rc = libcras_stream_params_set(
       stream_params, stream_direction_, frames_per_packet * 2,
       frames_per_packet, CRAS_STREAM_TYPE_DEFAULT, manager_->GetClientType(), 0,
@@ -270,6 +273,8 @@ void CrasUnifiedStream::Stop() {
   // Removing the stream from the client stops audio.
   libcras_client_rm_stream(client_, stream_id_);
 
+  ReportAndResetStats();
+
   is_playing_ = false;
 }
 
@@ -291,11 +296,16 @@ int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
   uint8_t* buf;
   struct timespec latency;
   void* usr_arg;
+  struct timespec underrun_duration_ts;
   libcras_stream_cb_data_get_frames(data, &frames);
   libcras_stream_cb_data_get_buf(data, &buf);
   libcras_stream_cb_data_get_latency(data, &latency);
   libcras_stream_cb_data_get_usr_arg(data, &usr_arg);
+  libcras_stream_cb_data_get_underrun_duration(data, &underrun_duration_ts);
   CrasUnifiedStream* me = static_cast<CrasUnifiedStream*>(usr_arg);
+  base::TimeDelta underrun_duration =
+      base::TimeDelta::FromTimeSpec(underrun_duration_ts);
+  me->CalculateAudioGlitches(underrun_duration);
   return me->WriteAudio(frames, buf, &latency);
 }
 
@@ -319,7 +329,8 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
       std::max(base::TimeDelta::FromTimeSpec(*latency_ts), base::TimeDelta());
 
   int frames_filled = source_callback_->OnMoreData(
-      delay, base::TimeTicks::Now(), {}, output_bus_.get());
+      delay, base::TimeTicks::Now(), glitch_info_accumulator_.GetAndReset(),
+      output_bus_.get());
 
   // Note: If this ever changes to output raw float the data must be clipped and
   // sanitized since it may come from an untrusted source such as NaCl.
@@ -336,6 +347,45 @@ void CrasUnifiedStream::NotifyStreamError(int err) {
   if (source_callback_) {
     source_callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
   }
+}
+
+void CrasUnifiedStream::ReportAndResetStats() {
+  SystemGlitchReporter::Stats stats =
+      glitch_reporter_.GetLongTermStatsAndReset();
+
+  if (!log_callback_.is_null()) {
+    std::string log_message = base::StringPrintf(
+        "CRAS out: (num_glitches_detected=[%d], cumulative_audio_lost=[%" PRId64
+        " ms],largest_glitch=[%" PRId64 " ms])",
+        stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
+        stats.largest_glitch_duration.InMilliseconds());
+
+    log_callback_.Run(log_message);
+    if (stats.glitches_detected != 0) {
+      DLOG(WARNING) << log_message;
+    }
+  }
+
+  last_underrun_duration_ = base::TimeDelta();
+  glitch_info_accumulator_.GetAndReset();
+}
+
+void CrasUnifiedStream::CalculateAudioGlitches(
+    base::TimeDelta underrun_duration) {
+  // |underrun_duration| obtained from callback is the cumulative value
+  // of the filled zero frames of the whole stream. Calculate
+  // the filled zero frames duration this callback.
+  DCHECK_GE(underrun_duration, last_underrun_duration_);
+  base::TimeDelta underrun_glitch_duration =
+      underrun_duration - last_underrun_duration_;
+
+  glitch_reporter_.UpdateStats(underrun_glitch_duration);
+
+  if (underrun_glitch_duration.is_positive()) {
+    glitch_info_accumulator_.Add(
+        AudioGlitchInfo{.duration = underrun_glitch_duration, .count = 1});
+  }
+  last_underrun_duration_ = underrun_duration;
 }
 
 }  // namespace media
