@@ -179,6 +179,10 @@ RenderProcessImpl::RenderProcessImpl()
                         "--experimental-wasm-relaxed-simd",
                         "--no-experimental-wasm-relaxed-simd");
 
+  SetV8FlagIfOverridden(features::kWebAssemblyStringref,
+                        "--experimental-wasm-stringref",
+                        "--no-experimental-wasm-stringref");
+
   SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
                         "--no-wasm-tier-up");
 

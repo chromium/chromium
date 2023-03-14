@@ -58788,6 +58788,7 @@ from previous Chrome versions.
   <int value="-1778760568"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
+  <int value="-1777820415" label="WebAssemblyStringref:disabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776429545"
       label="OptimizationGuideInstallWideModelStore:enabled"/>
@@ -62453,6 +62454,7 @@ from previous Chrome versions.
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>
   <int value="267706621" label="WallpaperPerDesk:disabled"/>
+  <int value="268383828" label="WebAssemblyStringref:enabled"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
   <int value="269631838" label="BorealisLinuxMode:disabled"/>
