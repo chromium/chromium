@@ -130,7 +130,21 @@ bool InputTypeView::NeedsShadowSubtree() const {
   return true;
 }
 
+TextControlInnerEditorElement* InputTypeView::EnsureInnerEditorElement() {
+  CreateShadowSubtreeIfNeeded();
+  return GetElement().InnerEditorElement();
+}
+
 void InputTypeView::CreateShadowSubtree() {}
+
+void InputTypeView::CreateShadowSubtreeIfNeeded() {
+  if (has_created_shadow_subtree_ || !NeedsShadowSubtree()) {
+    return;
+  }
+  GetElement().EnsureUserAgentShadowRoot();
+  has_created_shadow_subtree_ = true;
+  CreateShadowSubtree();
+}
 
 void InputTypeView::DestroyShadowSubtree() {
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())

@@ -95,7 +95,7 @@ void SliderThumbElement::DragFrom(const LayoutPoint& point) {
 
 void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
   HTMLInputElement* input(HostInput());
-  Element* track_element = input->UserAgentShadowRoot()->getElementById(
+  Element* track_element = input->EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdSliderTrack);
 
   const LayoutObject* input_object = input->GetLayoutObject();
@@ -329,8 +329,10 @@ void SliderContainerElement::DefaultEventHandler(Event& event) {
 
 void SliderContainerElement::HandleTouchEvent(TouchEvent* event) {
   HTMLInputElement* input = HostInput();
-  if (!input || input->IsDisabledFormControl() || !event)
+  if (!input || !input->UserAgentShadowRoot() ||
+      input->IsDisabledFormControl() || !event) {
     return;
+  }
 
   if (event->type() == event_type_names::kTouchend) {
     // TODO: Also do this for touchcancel?

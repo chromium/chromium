@@ -152,6 +152,10 @@ StepRange RangeInputType::CreateStepRange(
 }
 
 void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {
+  if (!HasCreatedShadowSubtree()) {
+    return;
+  }
+
   if (GetElement().IsDisabledFormControl())
     return;
 
@@ -299,7 +303,9 @@ ControlPart RangeInputType::AutoAppearance() const {
 }
 
 void RangeInputType::UpdateView() {
-  GetSliderThumbElement()->SetPositionFromValue();
+  if (HasCreatedShadowSubtree()) {
+    GetSliderThumbElement()->SetPositionFromValue();
+  }
 }
 
 String RangeInputType::SanitizeValue(const String& proposed_value) const {
@@ -317,6 +323,9 @@ void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
 }
 
 void RangeInputType::DisabledAttributeChanged() {
+  if (!HasCreatedShadowSubtree()) {
+    return;
+  }
   if (GetElement().IsDisabledFormControl())
     GetSliderThumbElement()->StopDragging();
 }
@@ -332,6 +341,10 @@ inline SliderThumbElement* RangeInputType::GetSliderThumbElement() const {
 }
 
 inline Element* RangeInputType::SliderTrackElement() const {
+  if (!HasCreatedShadowSubtree()) {
+    return nullptr;
+  }
+
   return GetElement().UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdSliderTrack);
 }
@@ -341,7 +354,7 @@ void RangeInputType::ListAttributeTargetChanged() {
   if (auto* object = GetElement().GetLayoutObject())
     object->SetSubtreeShouldDoFullPaintInvalidation();
   Element* slider_track_element = SliderTrackElement();
-  if (slider_track_element->GetLayoutObject()) {
+  if (slider_track_element && slider_track_element->GetLayoutObject()) {
     slider_track_element->GetLayoutObject()->SetNeedsLayout(
         layout_invalidation_reason::kAttributeChanged);
   }

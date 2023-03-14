@@ -142,7 +142,7 @@ bool DateTimeFormatValidator::ValidateFormat(
 
 DateTimeEditElement*
 MultipleFieldsTemporalInputTypeView::GetDateTimeEditElement() const {
-  auto* element = GetElement().UserAgentShadowRoot()->getElementById(
+  auto* element = GetElement().EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdDateTimeEdit);
   CHECK(!element || IsA<DateTimeEditElement>(element));
   return To<DateTimeEditElement>(element);
@@ -150,7 +150,7 @@ MultipleFieldsTemporalInputTypeView::GetDateTimeEditElement() const {
 
 SpinButtonElement* MultipleFieldsTemporalInputTypeView::GetSpinButtonElement()
     const {
-  auto* element = GetElement().UserAgentShadowRoot()->getElementById(
+  auto* element = GetElement().EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdSpinButton);
   CHECK(!element || IsA<SpinButtonElement>(element));
   return To<SpinButtonElement>(element);
@@ -158,7 +158,7 @@ SpinButtonElement* MultipleFieldsTemporalInputTypeView::GetSpinButtonElement()
 
 ClearButtonElement* MultipleFieldsTemporalInputTypeView::GetClearButtonElement()
     const {
-  auto* element = GetElement().UserAgentShadowRoot()->getElementById(
+  auto* element = GetElement().EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdClearButton);
   CHECK(!element || IsA<ClearButtonElement>(element));
   return To<ClearButtonElement>(element);
@@ -166,7 +166,7 @@ ClearButtonElement* MultipleFieldsTemporalInputTypeView::GetClearButtonElement()
 
 PickerIndicatorElement*
 MultipleFieldsTemporalInputTypeView::GetPickerIndicatorElement() const {
-  auto* element = GetElement().UserAgentShadowRoot()->getElementById(
+  auto* element = GetElement().EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdPickerIndicator);
   CHECK(!element || IsA<PickerIndicatorElement>(element));
   return To<PickerIndicatorElement>(element);
@@ -174,7 +174,7 @@ MultipleFieldsTemporalInputTypeView::GetPickerIndicatorElement() const {
 
 inline bool MultipleFieldsTemporalInputTypeView::ContainsFocusedShadowElement()
     const {
-  return GetElement().UserAgentShadowRoot()->contains(
+  return GetElement().EnsureShadowSubtree()->contains(
       GetElement().GetDocument().FocusedElement());
 }
 
