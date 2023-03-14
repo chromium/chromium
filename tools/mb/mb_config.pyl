@@ -38,7 +38,7 @@
       'linux-chrome': 'official_reclient',
       'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
       'mac-chrome': 'official_reclient_mac',
-      'win-branded-rel': 'chrome_branded_goma_minimal_symbols',
+      'win-branded-rel': 'chrome_branded_reclient_minimal_symbols',
       'win-chrome': 'official_reclient_x86',
       'win64-chrome': 'official_reclient_x64',
     },
@@ -1945,6 +1945,10 @@
 
     'chrome_branded_goma_minimal_symbols': [
       'chrome_branded', 'goma', 'minimal_symbols', 'release_bot',
+    ],
+
+    'chrome_branded_reclient_minimal_symbols': [
+      'chrome_branded', 'minimal_symbols', 'release_bot_reclient',
     ],
 
     'chromeos_amd64-generic-vm_lacros_rel_reclient': [
