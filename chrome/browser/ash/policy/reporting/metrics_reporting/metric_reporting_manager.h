@@ -15,7 +15,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -66,10 +65,6 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     // Returns app service availability for the given profile. Not all profiles
     // can run apps (for example, non-guest incognito profiles).
     virtual bool IsAppServiceAvailableForProfile(Profile* profile) const;
-
-    // Retrieves the `AppPlatformMetrics` component for the given profile.
-    virtual ::apps::AppPlatformMetrics* GetAppPlatformMetricsForProfile(
-        Profile* profile);
   };
 
   static std::unique_ptr<MetricReportingManager> Create(

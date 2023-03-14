@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -192,11 +192,6 @@ class MockDelegate : public MetricReportingManager::Delegate {
               IsAppServiceAvailableForProfile,
               (Profile * profile),
               (const, override));
-
-  MOCK_METHOD(::apps::AppPlatformMetrics*,
-              GetAppPlatformMetricsForProfile,
-              (Profile * profile),
-              (override));
 };
 
 struct MetricReportingSettingData {
@@ -272,7 +267,14 @@ class MetricReportingManagerTest
       public ::testing::WithParamInterface<MetricReportingManagerTestCase> {
  protected:
   void SetUp() override {
-    apps::AppPlatformMetricsServiceTestBase::SetUp();
+    // Set up `AppServiceProxy` with the stubbed `AppPlatformMetricsService`.
+    // Needed to ensure downstream components have the necessary setup for
+    // initialization.
+    ::apps::AppPlatformMetricsServiceTestBase::SetUp();
+    ::apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->SetAppPlatformMetricsServiceForTesting(
+            GetAppPlatformMetricsService());
+
     mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
     info_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kDevice, Destination::INFO_METRIC,
@@ -295,13 +297,6 @@ class MetricReportingManagerTest
     // Only one periodic upload report queue should be created.
     ON_CALL(*mock_delegate_, CreatePeriodicUploadReportQueue)
         .WillByDefault(Return(ByMove(std::move(telemetry_queue))));
-
-    // App platform metrics instance is only requested when app service is
-    // available for the given profile, so it is safe to return the instance by
-    // default here.
-    ON_CALL(*mock_delegate_, GetAppPlatformMetricsForProfile)
-        .WillByDefault(
-            Return(app_platform_metrics_service()->AppPlatformMetrics()));
   }
 
   test::FakeMetricReportQueue* info_queue_ptr_;

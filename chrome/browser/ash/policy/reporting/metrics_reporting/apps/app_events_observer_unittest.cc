@@ -14,14 +14,17 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::StrEq;
 
@@ -60,6 +63,22 @@ class FakePublisher : public ::apps::AppPublisher {
                ::apps::LoadIconCallback callback));
 };
 
+// Mock retriever for the `AppPlatformMetrics` component.
+class MockAppPlatformMetricsRetriever : public AppPlatformMetricsRetriever {
+ public:
+  MockAppPlatformMetricsRetriever() : AppPlatformMetricsRetriever(nullptr) {}
+  MockAppPlatformMetricsRetriever(const MockAppPlatformMetricsRetriever&) =
+      delete;
+  MockAppPlatformMetricsRetriever& operator=(
+      const MockAppPlatformMetricsRetriever&) = delete;
+  ~MockAppPlatformMetricsRetriever() override = default;
+
+  MOCK_METHOD(void,
+              GetAppPlatformMetrics,
+              (AppPlatformMetricsCallback callback),
+              (override));
+};
+
 class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
                               public ::testing::WithParamInterface<bool> {
  protected:
@@ -71,8 +90,16 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
 
     // Set up `AppEventsObserver` with relevant test params.
-    app_events_observer_ = std::make_unique<AppEventsObserver>(
-        app_platform_metrics_service()->AppPlatformMetrics());
+    auto mock_app_platform_metrics_retriever =
+        std::make_unique<MockAppPlatformMetricsRetriever>();
+    EXPECT_CALL(*mock_app_platform_metrics_retriever, GetAppPlatformMetrics(_))
+        .WillOnce([this](AppPlatformMetricsRetriever::AppPlatformMetricsCallback
+                             callback) {
+          std::move(callback).Run(
+              app_platform_metrics_service()->AppPlatformMetrics());
+        });
+    app_events_observer_ = AppEventsObserver::CreateForTest(
+        std::move(mock_app_platform_metrics_retriever));
     app_events_observer_->SetReportingEnabled(IsReportingEnabled());
   }
 
@@ -193,6 +220,23 @@ TEST_P(AppEventsObserverTest, OnAppUninstalled) {
     // Should not report any data if reporting is disabled.
     ASSERT_TRUE(test_event.no_result());
   }
+}
+
+TEST_P(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Reset `AppPlatformMetricsService` to destroy the `AppPlatformMetrics`
+  // component.
+  ResetAppPlatformMetricsService();
+
+  // Verify observer is unregistered by attempting to install an app and no
+  // metric data being reported.
+  static constexpr char app_id[] = "TestNewApp";
+  InstallOneApp(app_id, ::apps::AppType::kStandaloneBrowser,
+                /*publisher_id=*/"", ::apps::Readiness::kReady,
+                ::apps::InstallSource::kBrowser);
+  ASSERT_TRUE(test_event.no_result());
 }
 
 INSTANTIATE_TEST_SUITE_P(AppEventsObserverTests,
