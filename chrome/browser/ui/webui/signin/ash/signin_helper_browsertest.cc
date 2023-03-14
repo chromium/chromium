@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -261,15 +264,12 @@ TestSigninHelper::~TestSigninHelper() {
 
 IN_PROC_BROWSER_TEST_F(SigninHelperTest,
                        NoAccountAddedWhenAuthTokenFetchFails) {
-  base::RunLoop close_dialog_closure_run_loop;
+  base::test::RepeatingTestFuture future;
   // Set auth token fetch to fail.
   AddResponseClientOAuthFailure();
-  CreateSigninHelper(
-      base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
-        close_dialog_closure_run_loop.Quit();
-      }));
+  CreateSigninHelper(future.GetCallback());
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
   // No account should be added.
@@ -278,12 +278,12 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTest,
 
 IN_PROC_BROWSER_TEST_F(SigninHelperTest,
                        AccountAddedWhenAuthTokenFetchSucceeds) {
-  base::RunLoop close_dialog_closure_run_loop;
-  CreateSigninHelper(close_dialog_closure_run_loop.QuitClosure());
+  base::test::RepeatingTestFuture future;
+  CreateSigninHelper(future.GetCallback());
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
   // 1 account should be added.
@@ -335,20 +335,14 @@ class SigninHelperTestWithArcAccountRestrictions
   }
 
   bool IsAccountAvailableInArc(account_manager::Account account) {
-    bool result = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<const base::flat_set<account_manager::Account>&>
+        future;
     account_apps_availability()->GetAccountsAvailableInArc(
-        base::BindLambdaForTesting(
-            [&result, &account, &run_loop](
-                const base::flat_set<account_manager::Account>& accounts) {
-              for (const auto& a : accounts) {
-                if (a.raw_email == account.raw_email)
-                  result = true;
-              }
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
+        future.GetCallback());
+    return base::Contains(future.Get(), account.raw_email,
+                          [](const account_manager::Account& account_in_arc) {
+                            return account_in_arc.raw_email;
+                          });
   }
 
   ash::AccountAppsAvailability* account_apps_availability() {
@@ -403,13 +397,12 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
       std::make_unique<SigninHelper::ArcHelper>(
           /*is_available_in_arc=*/true, /*is_account_addition=*/true,
           account_apps_availability());
-  base::RunLoop close_dialog_closure_run_loop;
+  base::test::RepeatingTestFuture future;
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
-  CreateSigninHelper(std::move(arc_helper),
-                     close_dialog_closure_run_loop.QuitClosure());
+  CreateSigninHelper(std::move(arc_helper), future.GetCallback());
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
   // 1 account should be added.
@@ -438,16 +431,12 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
       std::make_unique<SigninHelper::ArcHelper>(
           /*is_available_in_arc=*/false, /*is_account_addition=*/true,
           account_apps_availability());
-  base::RunLoop close_dialog_closure_run_loop;
+  base::test::RepeatingTestFuture future;
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
-  CreateSigninHelper(
-      std::move(arc_helper),
-      base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
-        close_dialog_closure_run_loop.Quit();
-      }));
+  CreateSigninHelper(std::move(arc_helper), future.GetCallback());
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
   // 1 account should be added.
@@ -480,16 +469,12 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
       std::make_unique<SigninHelper::ArcHelper>(
           /*is_available_in_arc=*/true, /*is_account_addition=*/false,
           account_apps_availability());
-  base::RunLoop close_dialog_closure_run_loop;
+  base::test::RepeatingTestFuture future;
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
-  CreateSigninHelper(
-      std::move(arc_helper),
-      base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
-        close_dialog_closure_run_loop.Quit();
-      }));
+  CreateSigninHelper(std::move(arc_helper), future.GetCallback());
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
   // 1 account should be updated.
@@ -540,20 +525,20 @@ class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
 
 IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        AccountAddedForNonEnterpriseAccount) {
-  base::RunLoop close_dialog_closure_run_loop;
-
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
   // Set no hosted domain for user info request.
   AddResponseGetUserInfoWithoutHostedDomain();
+
+  base::test::RepeatingTestFuture future;
   // Non Enterprise account tries to sign in.
   CreateSigninHelper(
-      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*close_dialog_closure=*/future.GetCallback(),
       /*show_signin_blocked_by_policy_page=*/
       base::BindRepeating(&NotReached), kFakeGaiaId, kFakeEmail);
 
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
 
@@ -572,22 +557,22 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
 
 IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        AccountAddedForEnterpriseAccountWithNoPolicySet) {
-  base::RunLoop close_dialog_closure_run_loop;
-
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
   // Set user info response with hosted domain (hd) value.
   AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
   // Set SecondaryGoogleAccountUsage policy fetch to unset.
   AddResponseGetSecondaryGoogleAccountUsage("unset");
+
+  base::test::RepeatingTestFuture future;
   // Enterprise account tries to sign in.
   CreateSigninHelper(
-      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*close_dialog_closure=*/future.GetCallback(),
       /*show_signin_blocked_by_policy_page=*/
       base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
       kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
 
@@ -607,22 +592,22 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
 IN_PROC_BROWSER_TEST_F(
     SigninHelperTestSecondaryGoogleAccountUsage,
     AccountAddedForEnterpriseAccountWithPolicyValueAllUsages) {
-  base::RunLoop close_dialog_closure_run_loop;
-
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
   // Set user info response with hosted domain (hd) value.
   AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
   // Set SecondaryGoogleAccountUsage policy fetch to all.
   AddResponseGetSecondaryGoogleAccountUsage("all");
+
+  base::test::RepeatingTestFuture future;
   // Enterprise account tries to sign in.
   CreateSigninHelper(
-      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*close_dialog_closure=*/future.GetCallback(),
       /*show_signin_blocked_by_policy_page=*/
       base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
       kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
 
@@ -642,24 +627,23 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SigninHelperTestSecondaryGoogleAccountUsage,
     NoAccountAddedForEnterpriseAccountWithPolicyValuePrimaryAccountSignin) {
-  base::RunLoop show_signin_blocked_error_closure_run_loop;
-
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
   // Set user info response with hosted domain (hd) value.
   AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
   // Set SecondaryGoogleAccountUsage policy fetch to primary_account_signin.
   AddResponseGetSecondaryGoogleAccountUsage("primary_account_signin");
-  // Set response for token revokation.
+  // Set response for token revocation.
   AddResponseRevokeGaiaTokenOnServer();
+
+  base::test::RepeatingTestFuture future;
   // Enterprise account tries to sign in.
   CreateSigninHelper(
       /*close_dialog_closure=*/base::BindRepeating(&NotReached),
       /*show_signin_blocked_by_policy_page=*/
-      show_signin_blocked_error_closure_run_loop.QuitClosure(),
-      kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
+      future.GetCallback(), kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
   // Make sure the show_signin_blocked_error_closure_run_loop was called.
-  show_signin_blocked_error_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
 
@@ -674,11 +658,12 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        ReauthForInitialPrimaryEnterpriseAccount) {
-  base::RunLoop close_dialog_closure_run_loop;
   // Set auth token fetch to succeed.
   AddResponseClientOAuthSuccess();
+
+  base::test::RepeatingTestFuture future;
   CreateSigninHelper(
-      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*close_dialog_closure=*/future.GetCallback(),
       /*show_signin_blocked_by_policy_page=*/
       base::BindRepeating(&NotReached),
       user_manager::UserManager::Get()
@@ -688,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
       kFakePrimaryEmail);
 
   // Make sure the close_dialog_closure was called.
-  close_dialog_closure_run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   // Wait until SigninHelper finishes and deletes itself.
   base::RunLoop().RunUntilIdle();
 
