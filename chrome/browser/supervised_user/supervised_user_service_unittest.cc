@@ -30,6 +30,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

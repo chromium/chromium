@@ -55,9 +55,6 @@ extern const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[];
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kSupervisedUserApprovedExtensions[];
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-extern const char kSupervisedUserMetricsDayId[];
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 extern const char kURLsToRestoreOnStartup[];
 extern const char kUserFeedbackAllowed[];
@@ -493,8 +490,6 @@ extern const char kPrintJobHistoryExpirationPeriod[];
 extern const char kDeletePrintJobHistoryAllowed[];
 extern const char kPrintingOAuth2AuthorizationServers[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-extern const char kDefaultSupervisedUserFilteringBehavior[];
 
 extern const char kSupervisedUsers[];
 

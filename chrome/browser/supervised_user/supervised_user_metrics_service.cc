@@ -10,9 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/parental_control_metrics.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {

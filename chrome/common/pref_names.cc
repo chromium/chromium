@@ -148,12 +148,6 @@ const char kSupervisedUserApprovedExtensions[] =
     "profile.managed.approved_extensions";
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-// Integer pref to record the day id (number of days since origin of time) when
-// supervised user metrics were last recorded.
-const char kSupervisedUserMetricsDayId[] = "supervised_user.metrics.day_id";
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 #if BUILDFLAG(ENABLE_RLZ)
 // Integer. RLZ ping delay in seconds.
 const char kRlzPingDelaySeconds[] = "rlz_ping_delay";
@@ -1514,14 +1508,6 @@ const char kPrintJobHistoryExpirationPeriod[] =
 const char kDeletePrintJobHistoryAllowed[] =
     "printing.delete_print_job_history_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// An integer pref specifying the fallback behavior for sites outside of content
-// packs. One of:
-// 0: Allow (does nothing)
-// 1: Warn. [Deprecated]
-// 2: Block.
-const char kDefaultSupervisedUserFilteringBehavior[] =
-    "profile.managed.default_filtering_behavior";
 
 // List pref containing the users supervised by this user.
 const char kSupervisedUsers[] = "profile.managed_users";

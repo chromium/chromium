@@ -70,6 +70,10 @@ const char kSupervisedUserManualHosts[] = "profile.managed.manual_hosts";
 // Maps URLs to whether the URL is manually allowed or blocked.
 const char kSupervisedUserManualURLs[] = "profile.managed.manual_urls";
 
+// Integer pref to record the day id (number of days since origin of time) when
+// supervised user metrics were last recorded.
+const char kSupervisedUserMetricsDayId[] = "supervised_user.metrics.day_id";
+
 // Stores whether the SafeSites filter is enabled.
 const char kSupervisedUserSafeSites[] = "profile.managed.safe_sites";
 
@@ -77,5 +81,14 @@ const char kSupervisedUserSafeSites[] = "profile.managed.safe_sites";
 // manager. See SupervisedUserSharedSettingsService for a description of
 // the format.
 const char kSupervisedUserSharedSettings[] = "profile.managed.shared_settings";
+
+// An integer pref specifying the fallback behavior for sites outside of content
+// packs (see SupervisedUserFilter::FilteringBehavior). One of:
+// 0: Allow (does nothing)
+// 1: Warn [Deprecated]
+// 2: Block
+// 3: Invalid
+const char kDefaultSupervisedUserFilteringBehavior[] =
+    "profile.managed.default_filtering_behavior";
 
 }  // namespace prefs
