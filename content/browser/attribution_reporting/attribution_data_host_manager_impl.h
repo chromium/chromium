@@ -153,7 +153,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const std::string& header_value,
       data_decoder::DataDecoder::ValueOrError result);
 
-  void MaybeOnRegistrationsFinished(SourceRegistrationsId);
+  void MaybeOnRegistrationsFinished(
+      base::flat_set<SourceRegistrations>::const_iterator);
 
   void HandleTrigger(TriggerPayload, GlobalRenderFrameHostId);
   void MaybeBufferTrigger(

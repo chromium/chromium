@@ -437,7 +437,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
   DCHECK(redirect_it->navigation_complete == false);
   redirect_it->navigation_complete = true;
 
-  MaybeOnRegistrationsFinished(attribution_src_token);
+  MaybeOnRegistrationsFinished(redirect_it);
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
@@ -460,7 +460,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
       DCHECK(redirect_it->navigation_complete == false);
       redirect_it->navigation_complete = true;
 
-      MaybeOnRegistrationsFinished(*attribution_src_token);
+      MaybeOnRegistrationsFinished(redirect_it);
     }
   }
 
@@ -491,7 +491,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
   }
   sources.clear();
 
-  MaybeOnRegistrationsFinished(beacon_id);
+  MaybeOnRegistrationsFinished(it);
 }
 
 const AttributionDataHostManagerImpl::ReceiverContext*
@@ -789,19 +789,19 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
   absl::optional<SuitableOrigin> suitable_reporting_origin =
       SuitableOrigin::Create(std::move(reporting_origin));
   if (!suitable_reporting_origin) {
-    MaybeOnRegistrationsFinished(beacon_id);
+    MaybeOnRegistrationsFinished(it);
     return;
   }
 
   if (!headers) {
-    MaybeOnRegistrationsFinished(beacon_id);
+    MaybeOnRegistrationsFinished(it);
     return;
   }
 
   std::string source_header;
   if (!headers->GetNormalizedHeader(kAttributionReportingRegisterSourceHeader,
                                     &source_header)) {
-    MaybeOnRegistrationsFinished(beacon_id);
+    MaybeOnRegistrationsFinished(it);
     return;
   }
 
@@ -892,15 +892,12 @@ void AttributionDataHostManagerImpl::OnSourceParsed(
     attribution_reporting::RecordSourceRegistrationError(source.error());
   }
 
-  MaybeOnRegistrationsFinished(id);
+  MaybeOnRegistrationsFinished(it);
 }
 
 void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
-    SourceRegistrationsId id) {
-  auto it = registrations_.find(id);
-  if (it == registrations_.end()) {
-    return;
-  }
+    base::flat_set<SourceRegistrations>::const_iterator it) {
+  DCHECK(it != registrations_.end());
 
   if (it->pending_source_data > 0u || !it->navigation_complete.value_or(true)) {
     return;
