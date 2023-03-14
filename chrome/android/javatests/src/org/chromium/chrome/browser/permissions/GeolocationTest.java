@@ -36,8 +36,6 @@ public class GeolocationTest {
     public PermissionTestRule mPermissionRule = new PermissionTestRule();
 
     private static final String TEST_FILE = "/content/test/data/android/geolocation.html";
-    private static final String PERSIST_ACCEPT_HISTOGRAM =
-            "Permissions.Prompt.Accepted.Persisted.Geolocation";
 
     public GeolocationTest() {}
 
