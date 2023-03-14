@@ -21,6 +21,7 @@ class BookmarksPageHandler;
 
 namespace commerce {
 class ShoppingListHandler;
+class ShoppingListContextMenuController;
 }
 
 namespace ui {
@@ -59,6 +60,9 @@ class BookmarksSidePanelUI
       mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
           pending_image_handler);
 
+  commerce::ShoppingListContextMenuController*
+  GetShoppingListContextMenuController();
+
  private:
   // side_panel::mojom::BookmarksPageHandlerFactory:
   void CreateBookmarksPageHandler(
@@ -79,6 +83,8 @@ class BookmarksSidePanelUI
       shopping_list_factory_receiver_{this};
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<image_service::ImageServiceHandler> image_service_handler_;
+  std::unique_ptr<commerce::ShoppingListContextMenuController>
+      shopping_list_context_menu_controller_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

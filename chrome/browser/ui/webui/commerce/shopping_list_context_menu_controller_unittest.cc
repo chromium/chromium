@@ -15,6 +15,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,6 +26,22 @@
 
 namespace commerce {
 namespace {
+
+class MockShoppingListHandler : public ShoppingListHandler {
+ public:
+  explicit MockShoppingListHandler(ShoppingService* shopping_service)
+      : ShoppingListHandler(
+            mojo::PendingRemote<shopping_list::mojom::Page>(),
+            mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
+            nullptr,
+            shopping_service,
+            nullptr,
+            nullptr,
+            "") {}
+
+  MOCK_METHOD1(TrackPriceForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD1(UntrackPriceForBookmark, void(int64_t bookmark_id));
+};
 
 class ShoppingListContextMenuControllerTest : public testing::Test {
  public:
@@ -37,19 +54,20 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     shopping_service_ = std::make_unique<MockShoppingService>();
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
-    const bookmarks::BookmarkNode* product = AddProductBookmark(
-        bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-        true, 1230000, "usd");
-    bookmark_id_ = product->id();
+    bookmark_ = AddProductBookmark(bookmark_model_.get(), u"product 1",
+                                   GURL("http://example.com/1"), 123L, true,
+                                   1230000, "usd");
+    handler_ =
+        std::make_unique<MockShoppingListHandler>(shopping_service_.get());
     controller_ = std::make_unique<commerce::ShoppingListContextMenuController>(
-        bookmark_model_.get(), shopping_service_.get(), product,
-        menu_model_.get());
+        bookmark_model_.get(), shopping_service_.get(), handler_.get());
   }
 
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
   const bookmarks::BookmarkNode* bookmark_node() {
-    return bookmarks::GetBookmarkNodeByID(bookmark_model_.get(), bookmark_id_);
+    return bookmarks::GetBookmarkNodeByID(bookmark_model_.get(),
+                                          bookmark_->id());
   }
 
   MockShoppingService* shopping_service() { return shopping_service_.get(); }
@@ -60,16 +78,19 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
 
   ui::SimpleMenuModel* menu_mode() { return menu_model_.get(); }
 
+  MockShoppingListHandler* handler() { return handler_.get(); }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::UserActionTester user_action_tester_;
+  const bookmarks::BookmarkNode* bookmark_;
 
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListContextMenuController> controller_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  int64_t bookmark_id_;
+  std::unique_ptr<MockShoppingListHandler> handler_;
 };
 
 TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
@@ -81,7 +102,7 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
               IsSubscribedFromCache(SubscriptionWithId("123")))
       .Times(2);
 
-  controller()->AddPriceTrackingItemForBookmark();
+  controller()->AddPriceTrackingItemForBookmark(menu_mode(), bookmark_);
   ASSERT_EQ(menu_mode()->GetItemCount(), 1UL);
   ASSERT_EQ(menu_mode()->GetCommandIdAt(0),
             IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK);
@@ -91,7 +112,7 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
 
   shopping_service()->SetIsSubscribedCallbackValue(false);
 
-  controller()->AddPriceTrackingItemForBookmark();
+  controller()->AddPriceTrackingItemForBookmark(menu_mode(), bookmark_);
   ASSERT_EQ(menu_mode()->GetItemCount(), 1UL);
   ASSERT_EQ(menu_mode()->GetCommandIdAt(0),
             IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK);
@@ -100,38 +121,13 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
 }
 
 TEST_F(ShoppingListContextMenuControllerTest, ExecuteMenuCommand) {
-  shopping_service()->SetIsSubscribedCallbackValue(true);
-
-  // Make sure unsubscribe is called with the expected cluster ID.
-  EXPECT_CALL(*shopping_service(),
-              Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_));
+  EXPECT_CALL(*handler(), UntrackPriceForBookmark(bookmark_->id()));
   ASSERT_TRUE(controller()->ExecuteCommand(
-      IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK));
-  task_environment_.RunUntilIdle();
+      IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK, bookmark_));
 
-  shopping_service()->SetIsSubscribedCallbackValue(false);
-
-  ASSERT_EQ(0, user_action_tester_.GetActionCount(
-                   "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
-  ASSERT_EQ(1, user_action_tester_.GetActionCount(
-                   "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
-
-  // Make sure subscribe is called with the expected cluster ID.
-  EXPECT_CALL(*shopping_service(),
-              Subscribe(VectorHasSubscriptionWithId("123"), testing::_));
+  EXPECT_CALL(*handler(), TrackPriceForBookmark(bookmark_->id()));
   ASSERT_TRUE(controller()->ExecuteCommand(
-      IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK));
-  task_environment_.RunUntilIdle();
-
-  shopping_service()->SetIsSubscribedCallbackValue(true);
-
-  ASSERT_EQ(1, user_action_tester_.GetActionCount(
-                   "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
-  ASSERT_EQ(1, user_action_tester_.GetActionCount(
-                   "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
-
-  // Ignore commands that are not price tracking-related.
-  ASSERT_FALSE(controller()->ExecuteCommand(IDC_BOOKMARK_BAR_OPEN_ALL));
+      IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK, bookmark_));
 }
 
 }  // namespace

@@ -7334,6 +7334,7 @@ test("unit_tests") {
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:coupon_db_content_proto",
       "//components/commerce/core:shopping_service_test_support",
+      "//components/commerce/core/webui:webui",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/endpoint_fetcher:test_support",
       "//components/enterprise",

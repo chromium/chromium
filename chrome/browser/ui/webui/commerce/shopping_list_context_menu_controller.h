@@ -19,17 +19,16 @@ class SimpleMenuModel;
 namespace commerce {
 
 class ShoppingService;
+class ShoppingListHandler;
 
-// Helper class for shopping-related items in side panel context menu. This is
-// created when the context menu is opened and destroyed when the side panel is
-// closed.
+// Helper class for shopping-related items in side panel context menu. This
+// class is created and owned by BookmarksSidePanelUI so that it can be used for
+// context menu controlling in the bookmark side panel.
 class ShoppingListContextMenuController {
  public:
-  ShoppingListContextMenuController(
-      bookmarks::BookmarkModel* bookmark_model,
-      ShoppingService* shopping_service,
-      const bookmarks::BookmarkNode* bookmark_node,
-      ui::SimpleMenuModel* menu_model);
+  ShoppingListContextMenuController(bookmarks::BookmarkModel* bookmark_model,
+                                    ShoppingService* shopping_service,
+                                    ShoppingListHandler* shopping_list_hander);
   ShoppingListContextMenuController(const ShoppingListContextMenuController&) =
       delete;
   ShoppingListContextMenuController& operator=(
@@ -38,15 +37,15 @@ class ShoppingListContextMenuController {
 
   // Add menu item that will track or untrack price for this product bookmark
   // based on whether it's been tracked now.
-  void AddPriceTrackingItemForBookmark();
+  void AddPriceTrackingItemForBookmark(ui::SimpleMenuModel* menu_model,
+                                       const bookmarks::BookmarkNode* node);
   // Execute the context menu action represented by |command_id|.
-  bool ExecuteCommand(int command_id);
+  bool ExecuteCommand(int command_id, const bookmarks::BookmarkNode* node);
 
  private:
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
-  raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
-  raw_ptr<ui::SimpleMenuModel> menu_model_;
+  raw_ptr<ShoppingListHandler> shopping_list_hander_;
 };
 
 }  // namespace commerce

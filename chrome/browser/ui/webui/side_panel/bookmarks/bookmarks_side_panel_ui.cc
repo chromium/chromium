@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -249,6 +250,11 @@ void BookmarksSidePanelUI::BindInterface(
       std::move(pending_image_handler), std::move(image_service_weak));
 }
 
+commerce::ShoppingListContextMenuController*
+BookmarksSidePanelUI::GetShoppingListContextMenuController() {
+  return shopping_list_context_menu_controller_.get();
+}
+
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ =
@@ -268,4 +274,7 @@ void BookmarksSidePanelUI::CreateShoppingListHandler(
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
       std::move(page), std::move(receiver), bookmark_model, shopping_service,
       profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale());
+  shopping_list_context_menu_controller_ =
+      std::make_unique<commerce::ShoppingListContextMenuController>(
+          bookmark_model, shopping_service, shopping_list_handler_.get());
 }
