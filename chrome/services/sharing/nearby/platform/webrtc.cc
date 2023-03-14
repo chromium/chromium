@@ -363,7 +363,7 @@ void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
                                    PeerConnectionCallback callback) {
   ice_config_fetcher_->GetIceServers(base::BindOnce(
       &WebRtcMedium::OnIceServersFetched, weak_ptr_factory_.GetWeakPtr(),
-      observer, std::move(callback)));
+      base::UnsafeDanglingUntriaged(observer), std::move(callback)));
 }
 
 void WebRtcMedium::InitWebRTCThread(rtc::Thread** thread_to_set) {
