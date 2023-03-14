@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -93,6 +94,11 @@ class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
 // Subclass of DiceManageAccountBrowserTest with Mirror enabled.
 class MirrorBrowserTest : public InProcessBrowserTest {
  protected:
+  MirrorBrowserTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
   void RunExtensionConsentTest(extensions::WebAuthFlow::Partition partition,
                                bool expects_header) {
     net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -139,6 +145,8 @@ class MirrorBrowserTest : public InProcessBrowserTest {
     // https), but the test server runs on a random port.
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify the following items:
