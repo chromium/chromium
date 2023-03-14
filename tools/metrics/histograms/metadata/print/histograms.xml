@@ -245,14 +245,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.TransitionedToReadyState" enum="BooleanHit"
+<histogram name="PrintPreview.TransitionedToReadyState" enum="BooleanSuccess"
     expires_after="2024-01-23">
   <owner>gavinwill@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
-    Records TRUE when Print Preview transitions from NOT_READY to READY state.
-    Records FALSE when Print Preview transitions from NOT_READY to ERROR state.
-    This metric only records for non-PDF destinations.
+    Records `Success` when Print Preview transitions from the initial NOT_READY
+    state to the READY state. Records `Failure` when Print Preview transitions
+    from the initial NOT_READY state to the ERROR state. This metric only
+    records for non-PDF destinations.
   </summary>
 </histogram>
 
