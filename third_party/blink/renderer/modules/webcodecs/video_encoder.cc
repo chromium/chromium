@@ -54,6 +54,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_av_1.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_vp_9.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
@@ -128,6 +130,19 @@ int ComputeMaxActiveEncodes(
              : preferred_capacity;
 }
 
+media::VideoEncodeAccelerator::SupportedRateControlMode BitrateToSupportedMode(
+    const media::Bitrate& bitrate) {
+  switch (bitrate.mode()) {
+    case media::Bitrate::Mode::kConstant:
+      return media::VideoEncodeAccelerator::kConstantMode;
+    case media::Bitrate::Mode::kVariable:
+      return media::VideoEncodeAccelerator::kVariableMode;
+    case media::Bitrate::Mode::kExternal:
+      // External rate control is not supported by VEA yet.
+      return media::VideoEncodeAccelerator::kNoMode;
+  }
+}
+
 bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
@@ -179,6 +194,13 @@ bool IsAcceleratedConfigurationSupported(
         !base::Contains(supported_profile.scalability_modes,
                         options.scalability_mode.value())) {
       continue;
+    }
+
+    if (options.bitrate.has_value()) {
+      auto mode = BitrateToSupportedMode(options.bitrate.value());
+      if (!(mode & supported_profile.rate_control_modes)) {
+        continue;
+      }
     }
 
     found_supported_profile = true;
@@ -238,6 +260,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     }
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
+    } else if (config->hasBitrateMode() &&
+               config->bitrateMode() == "quantizer") {
+      result->options.bitrate = media::Bitrate::ExternalRateControl();
     } else {
       // VBR in media:Bitrate supports both target and peak bitrate.
       // Currently webcodecs doesn't expose peak bitrate
@@ -350,28 +375,8 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
   switch (config->codec) {
     case media::VideoCodec::kAV1:
-      if (config->profile !=
-          media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN) {
-        if (exception_state) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kNotSupportedError, "Unsupported av1 profile.");
-        }
-        return false;
-      }
-      break;
-
     case media::VideoCodec::kVP8:
-      break;
-
     case media::VideoCodec::kVP9:
-      if (config->profile == media::VideoCodecProfile::VP9PROFILE_PROFILE1 ||
-          config->profile == media::VideoCodecProfile::VP9PROFILE_PROFILE3) {
-        if (exception_state) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kNotSupportedError, "Unsupported vp9 profile.");
-        }
-        return false;
-      }
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case media::VideoCodec::kHEVC:
@@ -712,8 +717,21 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     DCHECK(self->active_config_);
 
     if (!status.is_ok()) {
-      self->HandleError(self->logger_->MakeException(
-          "Encoder initialization error.", std::move(status)));
+      std::string error_message;
+      switch (status.code()) {
+        case media::EncoderStatus::Codes::kEncoderUnsupportedProfile:
+          error_message = "Unsupported codec profile.";
+          break;
+        case media::EncoderStatus::Codes::kEncoderUnsupportedConfig:
+          error_message = "Unsupported configuration parameters.";
+          break;
+        default:
+          error_message = "Encoder initialization error.";
+          break;
+      }
+
+      self->HandleError(
+          self->logger_->MakeException(error_message, std::move(status)));
     } else {
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
                                 media::VideoCodec::kMaxValue);
@@ -924,6 +942,28 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
   media::VideoEncoder::EncodeOptions result;
   result.key_frame = request->encodeOpts->hasKeyFrameNonNull() &&
                      request->encodeOpts->keyFrameNonNull();
+  switch (active_config_->codec) {
+    case media::VideoCodec::kAV1: {
+      if (!request->encodeOpts->hasAv1() ||
+          !request->encodeOpts->av1()->hasQuantizer()) {
+        break;
+      }
+      result.quantizer = request->encodeOpts->av1()->quantizer();
+      break;
+    }
+    case media::VideoCodec::kVP9: {
+      if (!request->encodeOpts->hasVp9() ||
+          !request->encodeOpts->vp9()->hasQuantizer()) {
+        break;
+      }
+      result.quantizer = request->encodeOpts->vp9()->quantizer();
+      break;
+    }
+    case media::VideoCodec::kVP8:
+    case media::VideoCodec::kH264:
+    default:
+      break;
+  }
   return result;
 }
 

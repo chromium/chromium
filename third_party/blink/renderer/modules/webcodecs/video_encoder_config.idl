@@ -4,6 +4,8 @@
 
 // https://github.com/WICG/web-codecs
 
+enum VideoEncoderBitrateMode { "constant", "variable", "quantizer" };
+
 // NOTE: Keep this structure in sync with CopyConfig() defined in
 // video_encoder.cc.
 dictionary VideoEncoderConfig {
@@ -12,7 +14,7 @@ dictionary VideoEncoderConfig {
   AlphaOption alpha = "discard";
 
   [EnforceRange] unsigned long long bitrate;
-  BitrateMode bitrateMode = "variable";
+  VideoEncoderBitrateMode bitrateMode = "variable";
 
   double framerate;
 

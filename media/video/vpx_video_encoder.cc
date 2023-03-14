@@ -289,7 +289,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   if (options.bitrate.has_value() &&
       options.bitrate->mode() == Bitrate::Mode::kExternal && !is_vp9) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                       "Unsupported bitrate mode"));
     return;
   }

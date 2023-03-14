@@ -381,6 +381,14 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     return;
   }
 
+  if (options.bitrate.has_value() &&
+      options.bitrate->mode() == Bitrate::Mode::kExternal) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                      "Unsupported bitrate mode"));
+    return;
+  }
+
   if (!options.frame_size.GetCheckedArea().IsValid()) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
