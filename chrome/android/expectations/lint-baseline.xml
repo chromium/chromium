@@ -3451,7 +3451,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION"
+        message="Must be one of: RetrieveMetricsTaskStatus.SUCCESS, RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION"
         errorLine1="                        .setMax(RetrieveMetricsTaskStatus.COUNT)"
         errorLine2="                                                          ~~~~~">
         <location
@@ -3469,28 +3469,6 @@
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/services/MetricsBridgeService.java"
             line="121"
             column="57"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION"
-        errorLine1="                list.add(logRetrieveMetricsTaskStatus(RetrieveMetricsTaskStatus.SUCCESS));"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/services/MetricsBridgeService.java"
-            line="203"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION"
-        errorLine1="                list.add(logRetrieveMetricsTaskStatus(RetrieveMetricsTaskStatus.SUCCESS));"
-        errorLine2="                                                                                ~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/services/MetricsBridgeService.java"
-            line="203"
-            column="81"/>
     </issue>
 
     <issue
