@@ -189,8 +189,9 @@ class Gpu::EstablishRequest
 
     if (establish_event_) {
       // Gpu::EstablishGpuChannelSync() was called. Unblock the main thread and
-      // let it finish.
-      establish_event_->Signal();
+      // let it finish. The main thread owns the event and may destroy it as
+      // soon as the thread is unblocked, so avoid dangling references to it.
+      establish_event_.ExtractAsDangling()->Signal();
     } else {
       main_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&EstablishRequest::FinishOnMain, this));
