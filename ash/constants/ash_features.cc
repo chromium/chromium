@@ -1967,7 +1967,7 @@ BASE_FEATURE(kTerminalMultiProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables SFTP / mount for Terminal..
-BASE_FEATURE(kTerminalSftp, "TerminalSftp", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTerminalSftp, "TerminalSftp", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tmux integration in the Terminal System App.
 BASE_FEATURE(kTerminalTmuxIntegration,
