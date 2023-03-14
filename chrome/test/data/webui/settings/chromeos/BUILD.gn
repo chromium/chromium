@@ -130,6 +130,7 @@ test_files = [
   "per_device_pointing_stick_subsection_test.js",
   "per_device_pointing_stick_test.js",
   "per_device_touchpad_subsection_test.js",
+  "per_device_touchpad_test.js",
   "personalization_page_with_personalization_hub_test.js",
   "privacy_hub_subpage_tests.js",
   "quick_unlock_authenticate_browsertest_chromeos.js",

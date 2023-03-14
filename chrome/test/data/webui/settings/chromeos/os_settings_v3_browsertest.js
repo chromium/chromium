@@ -440,6 +440,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'PerDevicePointingStickSubsection',
    'per_device_pointing_stick_subsection_test.js'
  ],
+ ['PerDeviceTouchpad', 'per_device_touchpad_test.js'],
  ['PerDeviceTouchpadSubsection', 'per_device_touchpad_subsection_test.js'],
  [
    'PersonalizationPageWithPersonalizationHub',

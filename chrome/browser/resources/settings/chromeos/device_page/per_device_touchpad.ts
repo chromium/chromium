@@ -32,7 +32,7 @@ import {getTemplate} from './per_device_touchpad.html.js';
 
 const SettingsPerDeviceTouchpadElementBase = RouteObserverMixin(PolymerElement);
 
-class SettingsPerDeviceTouchpadElement extends
+export class SettingsPerDeviceTouchpadElement extends
     SettingsPerDeviceTouchpadElementBase {
   static get is(): string {
     return 'settings-per-device-touchpad';
@@ -56,7 +56,7 @@ class SettingsPerDeviceTouchpadElement extends
 
   constructor() {
     super();
-    this.fetchConnectedTouchpads();
+    this.observeTouchpadSettings();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -66,9 +66,12 @@ class SettingsPerDeviceTouchpadElement extends
     }
   }
 
-  private async fetchConnectedTouchpads(): Promise<void> {
-    this.touchpads =
-        await this.inputDeviceSettingsProvider.getConnectedTouchpadSettings();
+  private async observeTouchpadSettings(): Promise<void> {
+    this.inputDeviceSettingsProvider.observeTouchpadSettings(this);
+  }
+
+  onTouchpadListUpdated(touchpads: Touchpad[]): void {
+    this.touchpads = touchpads;
   }
 }
 

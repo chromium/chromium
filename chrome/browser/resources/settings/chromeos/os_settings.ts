@@ -120,6 +120,7 @@ export {SettingsPerDeviceMouseElement} from './device_page/per_device_mouse.js';
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {SettingsPerDevicePointingStickElement} from './device_page/per_device_pointing_stick.js';
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';
+export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpad.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './kerberos_page/kerberos_accounts_browser_proxy.js';

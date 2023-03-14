@@ -78,6 +78,7 @@ export class FakeInputDeviceSettingsProvider implements
   private keyboardObservers: KeyboardObserverInterface[] = [];
   private pointingStickObservers: PointingStickObserverInterface[] = [];
   private mouseObservers: MouseObserverInterface[] = [];
+  private touchpadObservers: TouchpadObserverInterface[] = [];
 
   constructor() {
     // Setup method resolvers.
@@ -98,6 +99,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeTouchpads(touchpads: Touchpad[]): void {
     this.methods.setResult('fakeTouchpads', touchpads);
+    this.notifyTouchpadListUpdated();
   }
 
   getConnectedTouchpadSettings(): Promise<Touchpad[]> {
@@ -169,10 +171,10 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
-  notifyPointingStickListUpdated(): void {
-    const pointingSticks = this.methods.getResult('fakePointingSticks');
-    for (const observer of this.pointingStickObservers) {
-      observer.onPointingStickListUpdated(pointingSticks);
+  notifyTouchpadListUpdated(): void {
+    const touchpads = this.methods.getResult('fakeTouchpads');
+    for (const observer of this.touchpadObservers) {
+      observer.onTouchpadListUpdated(touchpads);
     }
   }
 
@@ -183,13 +185,21 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
+  notifyPointingStickListUpdated(): void {
+    const pointingSticks = this.methods.getResult('fakePointingSticks');
+    for (const observer of this.pointingStickObservers) {
+      observer.onPointingStickListUpdated(pointingSticks);
+    }
+  }
+
   observeKeyboardSettings(observer: KeyboardObserverInterface): void {
     this.keyboardObservers.push(observer);
     this.notifyKeboardListUpdated();
   }
 
-  observeTouchpadSettings(_observer: TouchpadObserverInterface): void {
-    // TODO(yyhyyh): Implement observeTouchpadSettings().
+  observeTouchpadSettings(observer: TouchpadObserverInterface): void {
+    this.touchpadObservers.push(observer);
+    this.notifyTouchpadListUpdated();
   }
 
   observeMouseSettings(observer: MouseObserverInterface): void {
