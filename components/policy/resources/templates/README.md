@@ -5,12 +5,12 @@ This directory houses the data templates used Chromium browser and OS policies.
 # Policy definitions
 
 Policies are defined under
-[policy_definitions](https://cs.chromium.org/chromium/src/components/policy/resources/templates/).
+[policy_definitions](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions).
 Every subdirectory represents a policy group.
 
 * To create a new policy group, create a new directory named after the new group
-  under [policy_definitions](https://cs.chromium.org/chromium/src/components/policy/resources/templates/).
-* To create a new policy, create a yaml file under the appropriate group. The
+  under [policy_definitions](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions).
+* To create a new policy, create a yaml file under the appropriate group.
   The name of the file will be the name of the policy.
   For more information on policy creation, visit [add_new_policy.md](/docs/enterprise/add_new_policy.md#adding-a-new-policy).
 * To remove a policy, more information can be found at [add_new_policy.md](/docs/enterprise/add_new_policy.md#removing-support-for-a-policy).
