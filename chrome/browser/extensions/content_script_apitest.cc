@@ -22,11 +22,14 @@
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
@@ -39,6 +42,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -128,7 +132,39 @@ class ContentScriptApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Serve valid HTTPS from test server.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_test_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_test_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_test_server_->Start());
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(
+        https_test_server_->port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(
+        embedded_test_server()->port());
   }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ExtensionApiTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptAllFrames) {
@@ -957,9 +993,25 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CannotScriptTheNewTabPage) {
       did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
 
   // The extension should inject on "normal" urls.
-  GURL unprotected_url = embedded_test_server()->GetURL(
-      "example.com", "/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url));
+
+  // Test on an HTTP URL. Disable HTTPS upgrades on example1.com for this test
+  // to work.
+  auto* prefs = browser()->profile()->GetPrefs();
+  base::Value::List allowlist;
+  allowlist.Append("example1.com");
+  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
+
+  GURL unprotected_url1 = embedded_test_server()->GetURL(
+      "example1.com", "/extensions/test_file.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url1));
+  EXPECT_TRUE(
+      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+
+  // Test on an HTTPS URL. If HTTPS-Upgrades feature is enabled, this URL is
+  // upgraded to HTTPS.
+  GURL unprotected_url2 = embedded_test_server()->GetURL(
+      "example2.com", "/extensions/test_file.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url2));
   EXPECT_TRUE(
       did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
 }
