@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "services/network/public/mojom/no_vary_search.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -385,17 +384,6 @@ void SpeculationRuleSet::Source::Trace(Visitor* visitor) const {
 
 // ---- SpeculationRuleSet implementation ----
 
-namespace {
-
-// If enabled, allows non-standard JSON comments in speculation rules.
-// TODO(crbug.com/1264024): Remove this feature if no issues arose with
-// deprecating it.
-BASE_FEATURE(kSpeculationRulesJSONComments,
-             "SpeculationRulesJSONComments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 SpeculationRuleSet::SpeculationRuleSet(base::PassKey<SpeculationRuleSet>,
                                        Source* source)
     : inspector_id_(IdentifiersFactory::CreateIdentifier()), source_(source) {}
@@ -411,12 +399,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.
-  // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
   JSONParseError parse_error;
-  auto parsed = JSONObject::From(
-      base::FeatureList::IsEnabled(kSpeculationRulesJSONComments)
-          ? ParseJSONWithCommentsDeprecated(source_text, &parse_error)
-          : ParseJSON(source_text, &parse_error));
+  auto parsed = JSONObject::From(ParseJSON(source_text, &parse_error));
 
   // If parsed is not a map, then return null.
   if (!parsed) {
