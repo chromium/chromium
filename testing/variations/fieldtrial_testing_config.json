@@ -5435,6 +5435,24 @@
             ]
         }
     ],
+    "GoogleLensHybridIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "AllLVFEntrypoints_20230314",
+                    "enable_features": [
+                        "EnableLensInHomeScreenWidget",
+                        "EnableLensInKeyboard",
+                        "EnableLensInNTP",
+                        "kNewNTPOmniboxLayout"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensTabletIntegration": [
         {
             "platforms": [
