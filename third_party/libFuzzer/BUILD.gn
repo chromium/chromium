@@ -16,6 +16,8 @@ config("warnings") {
   }
 }
 
+# Depend on this if you wish to use LLVMFuzzerRunDriver from within
+# some existing code
 source_set("libfuzzer") {
   sources = [
     "src/FuzzerCrossOver.cpp",
@@ -42,10 +44,6 @@ source_set("libfuzzer") {
     "src/FuzzerUtilWindows.cpp",
   ]
 
-  if (!is_ios) {
-    sources += [ "src/FuzzerMain.cpp" ]
-  }
-
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
   configs += [ ":warnings" ]
@@ -53,6 +51,18 @@ source_set("libfuzzer") {
   deps = []
   if (is_fuchsia) {
     deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
+  }
+}
+
+# Depend on this if you wish for libfuzzer to provide the main()
+# function for your target.
+source_set("libfuzzer_main") {
+  deps = [ ":libfuzzer" ]
+  configs -= fuzzing_engine_remove_configs
+  configs += fuzzing_engine_add_configs
+  sources = []
+  if (!is_ios) {
+    sources += [ "src/FuzzerMain.cpp" ]
   }
 }
 
