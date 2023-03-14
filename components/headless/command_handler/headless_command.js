@@ -175,7 +175,7 @@ class TargetPage {
     const targetPage = new TargetPage(browserSession);
 
     const dp = browserSession.protocol();
-    const params = {url: 'about:blank', width: 800, height: 600};
+    const params = {url: 'about:blank'};
     const createContextOptions = {};
     params.browserContextId =
         (await dp.Target.createBrowserContext(createContextOptions))

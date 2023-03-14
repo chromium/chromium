@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_web_contents.h"
+#include "headless/public/switches.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -35,6 +37,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
@@ -249,6 +252,40 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotWithBackgroundCommandBrowserTest,
   // Expect a centered blue rectangle on red background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
                                SkColorSetRGB(0xff, 0x00, 0x00)));
+}
+
+class HeadlessScreenshotCommandBrowserTestWithWindowSize
+    : public HeadlessScreenshotCommandBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {4096, 2160};
+
+  HeadlessScreenshotCommandBrowserTestWithWindowSize() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessScreenshotCommandBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kWindowSize,
+        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTestWithWindowSize,
+                       ScreenshotWindowSize) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  RunTest();
+
+  ASSERT_TRUE(base::PathExists(screenshot_filename_)) << screenshot_filename_;
+
+  std::string png_data;
+  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
+      << screenshot_filename_;
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+
+  EXPECT_EQ(bitmap.width(), kWindowSize.width());
+  EXPECT_EQ(bitmap.height(), kWindowSize.height());
 }
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
