@@ -455,6 +455,33 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   return output;
 }
 
+// The current WebNN spec doesn't define the calculation formula of the output
+// size for resample2d. An issue has been filed to track it -
+// https://github.com/webmachinelearning/webnn/issues/360.
+absl::optional<uint32_t> CalculateResample2dOutputSize(
+    const uint32_t input_size,
+    const float scale,
+    String& error_message) {
+  // Calculate the output size in double precision floating point number that
+  // ensures values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
+  // which is smaller than the max safe integer value for double type.
+  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    error_message = "The scale is too large.";
+    return absl::nullopt;
+  }
+  const uint32_t output_size =
+      base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
+  if (output_size == 0) {
+    error_message = "The scale is too small.";
+    return absl::nullopt;
+  }
+  return output_size;
+}
 }  // namespace
 
 // static
@@ -1170,22 +1197,27 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
                                         "All scales should be greater than 0.");
       return nullptr;
     }
-    base::CheckedNumeric<uint32_t> checked_output_height =
-        input_shape[axes[0]] * scales[0];
-    if (!checked_output_height.AssignIfValid(&output_shape[axes[0]])) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The scale height is too large.");
+    String error_message;
+    auto output_height = CalculateResample2dOutputSize(
+        input_shape[axes[0]], scales[0], error_message);
+    if (!output_height) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Failed to calculate the output height: " + error_message);
       return nullptr;
     }
-    base::CheckedNumeric<uint32_t> checked_output_width =
-        input_shape[axes[1]] * scales[1];
-    if (!checked_output_width.AssignIfValid(&output_shape[axes[1]])) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The scale width is too large.");
-      return nullptr;
-    }
-  }
+    output_shape[axes[0]] = output_height.value();
 
+    auto output_width = CalculateResample2dOutputSize(input_shape[axes[1]],
+                                                      scales[1], error_message);
+    if (!output_width) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Failed to calculate the output width: " + error_message);
+      return nullptr;
+    }
+    output_shape[axes[1]] = output_width.value();
+  }
   auto* resample2d = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kResample2d, options);
   String error_message;

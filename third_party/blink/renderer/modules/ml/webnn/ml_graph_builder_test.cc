@@ -2278,7 +2278,22 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The scale height is too large.");
+              "Failed to calculate the output height: The scale is too large.");
+  }
+  {
+    // Test throwing error when the scale height is too small.
+    auto* input =
+        BuildInput(builder, "input", {1, 1, 2, 4},
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* options = MLResample2dOptions::Create();
+    options->setScales({0.02, 0.8});
+    auto* output =
+        builder->resample2d(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Failed to calculate the output height: The scale is too small.");
   }
   {
     // Test throwing error when the scale width is too large.
@@ -2293,7 +2308,22 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The scale width is too large.");
+              "Failed to calculate the output width: The scale is too large.");
+  }
+  {
+    // Test throwing error when the scale width is too small.
+    auto* input =
+        BuildInput(builder, "input", {1, 1, 2, 4},
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* options = MLResample2dOptions::Create();
+    options->setScales({0.7, 0.1});
+    auto* output =
+        builder->resample2d(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Failed to calculate the output width: The scale is too small.");
   }
   {
     // Test throwing error when the length of axes is not 2.
