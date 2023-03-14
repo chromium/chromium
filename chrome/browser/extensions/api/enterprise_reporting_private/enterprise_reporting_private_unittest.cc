@@ -455,7 +455,7 @@ class EnterpriseReportingPrivateGetContextInfoTest
 
   bool BuiltInDnsClientPlatformDefault() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     return true;
 #else
     return false;
@@ -702,11 +702,9 @@ class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
           enterprise_reporting_private::SettingValue> {
  public:
   void SetUp() override {
-    ExtensionApiUnittest::SetUp();
+    EnterpriseReportingPrivateGetContextInfoTest::SetUp();
     ASSERT_TRUE(fake_appdata_dir_.CreateUniqueTempDir());
     file_path_ = fake_appdata_dir_.GetPath().Append("ufw.conf");
-    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(), base::BindRepeating(&CreateProfileIDService));
   }
 
   void ExpectDefaultPolicies(
